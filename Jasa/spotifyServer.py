@@ -2,6 +2,10 @@ import requests
 from flask import Flask, render_template, request, redirect, url_for,jsonify,session
 import os
 import urllib.parse
+import base64
+import re
+
+
 app = Flask(__name__)
 if not app.secret_key:
     app.secret_key = os.urandom(24)
@@ -16,6 +20,7 @@ base_url = 'https://api.spotify.com/v1/'
 scope = 'user-read-private user-read-email user-read-playback-state user-modify-playback-state'  # Add necessary scopes here
 @app.route("/")
 def index():
+    print("got a call")
     if "access_token" not in session:
         return(redirect("/login"))
     return ("<div> <a href='/login'>login</a> </div>"
@@ -184,6 +189,35 @@ def getPlaybackState():
     response = requests.get(url, headers=headers)
     return response
 
+@app.route("/test")
+def test():
+    print("/test running")
+    response = jsonify({"message": "Hello from Flask!"})
+    return response
+
+@app.route('/uploadImage', methods=['POST'])
+def upload_image():
+    print("started upload")
+    data = request.json
+    image_data_url = data.get('image')
+    try:
+        print("started upload2")
+        base64_str = re.search(r'base64,(.*)', image_data_url).group(1)
+        image_data = base64.b64decode(base64_str)
+
+
+        with open('uploaded_image.png', 'wb') as f:
+            f.write(image_data)
+
+        print("Image successfully uploaded")
+        return jsonify({'message': 'Image uploaded successfully'}), 200
+    except :
+        print("Error during upload:")
+        return jsonify({'error': 'Failed to upload image'}), 500
+    # except(e):
+    #     return jsonify({"message": "failed upload" + e})
+
+    return jsonify({"message": "sucesfull upload"})
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
     
