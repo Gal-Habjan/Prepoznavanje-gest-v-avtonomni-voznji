@@ -2,10 +2,6 @@ import requests
 from flask import Flask, render_template, request, redirect, url_for,jsonify,session
 import os
 import urllib.parse
-import base64
-import re
-
-
 app = Flask(__name__)
 if not app.secret_key:
     app.secret_key = os.urandom(24)
@@ -20,9 +16,8 @@ base_url = 'https://api.spotify.com/v1/'
 scope = 'user-read-private user-read-email user-read-playback-state user-modify-playback-state'  # Add necessary scopes here
 @app.route("/")
 def index():
-    print("got a call")
-    # if "access_token" not in session:
-    #     return(redirect("/login"))
+    if "access_token" not in session:
+        return(redirect("/login"))
     return ("<div> <a href='/login'>login</a> </div>"
             "<div><a href='/continuePlaying'>continue</a></div>"
             "<div><a href='/pause'>pause</a></div>"
@@ -44,9 +39,7 @@ def login():
 
     }
     url = f'{auth_url}?{urllib.parse.urlencode(params)}'
-    print("my url:", url)
-    #https://accounts.spotify.com/authorize?response_type=code&client_id=f1a15dd2014f41b789ff3cc5ac81ca76&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcallback&scope=user-read-private+user-read-email+user-read-playback-state+user-modify-playback-state
-    #https://accounts.spotify.com/authorize?response_type=code&client_id=f1a15dd2014f41b789ff3cc5ac81ca76&redirect_uri=http%3A%2F%2Flocalhost%3A3000&scope=user-read-private%20user-read-email%20user-read-playback-state%20user-modify-playback-state
+
     return redirect(url)
 
 @app.route("/callback")
@@ -74,12 +67,11 @@ def callback():
 def pause():
     print("pausing")
     url = 'https://api.spotify.com/v1/me/player/pause'
-
     headers = {
         'Authorization': 'Bearer ' + session['access_token']
 
     }
-    print(headers)
+
     response = requests.put(url, headers=headers)
     print(response)
 
@@ -192,35 +184,6 @@ def getPlaybackState():
     response = requests.get(url, headers=headers)
     return response
 
-@app.route("/test")
-def test():
-    print("/test running")
-    response = jsonify({"message": "Hello from Flask!"})
-    return response
-
-@app.route('/uploadImage', methods=['POST'])
-def upload_image():
-    print("started upload")
-    data = request.json
-    image_data_url = data.get('image')
-    try:
-        print("started upload2")
-        base64_str = re.search(r'base64,(.*)', image_data_url).group(1)
-        image_data = base64.b64decode(base64_str)
-
-
-        with open('uploaded_image.png', 'wb') as f:
-            f.write(image_data)
-
-        print("Image successfully uploaded")
-        return jsonify({'message': 'Image uploaded successfully'}), 200
-    except :
-        print("Error during upload:")
-        return jsonify({'error': 'Failed to upload image'}), 500
-    # except(e):
-    #     return jsonify({"message": "failed upload" + e})
-
-    return jsonify({"message": "sucesfull upload"})
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
     
