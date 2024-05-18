@@ -1,5 +1,5 @@
 import requests
-from flask import Flask, render_template, request, redirect, url_for,jsonify,session
+from flask import Flask, render_template, request, redirect, url_for,jsonify,session, make_response, Response
 import os
 import urllib.parse
 import base64
@@ -11,8 +11,8 @@ if not app.secret_key:
     app.secret_key = os.urandom(24)
 client_id = 'f1a15dd2014f41b789ff3cc5ac81ca76'
 client_secret = '1d903db39bd5475fa8540e03b0df7735'
-# redirect_uri = 'http://localhost:5000/callback'
-redirect_uri = 'http://localhost:3000'
+redirect_uri = 'http://localhost:5000/callback'
+# redirect_uri = 'http://localhost:3000'
 
 auth_url = 'https://accounts.spotify.com/authorize'
 token_url = 'https://accounts.spotify.com/api/token'
@@ -48,7 +48,7 @@ def login():
     # print("my url:", url)
     return redirect(url)
 
-
+login()
 def getAccessTokenFromUrl():
     if "code" in request.args:
             params = {
@@ -85,18 +85,25 @@ def callback():
 
 @app.route("/pause")
 def pause():
-    print("pausing")
+    # if "access_token" not in session:
+    #     return Response("{'message':'no access token'}", status=400, mimetype='application/json',)
     url = 'https://api.spotify.com/v1/me/player/pause'
 
+    token = ""
+    if("access_token" in session):
+        token = session['access_token']
+        
     headers = {
-        'Authorization': 'Bearer ' + session['access_token']
+        'Authorization': 'Bearer ' + token
 
     }
     # print(headers)
     response = requests.put(url, headers=headers)
-    # print(response)
+    print("pause status code:",response.status_code)
 
-    return response
+
+
+    return  Response("{'a':'b'}", status=response.status_code, mimetype='application/json')
 
 
 @app.route("/continuePlaying")
@@ -109,10 +116,10 @@ def continuePlaying():
     }
 
     response = requests.put(url, headers=headers)
-    print(response)
+    print("continue status code",response.status_code)
 
 
-    return redirect("/")
+    return Response("{'a':'b'}", status=201, mimetype='application/json')
 @app.route("/nextSong")
 def nextSong():
     print("next song")
