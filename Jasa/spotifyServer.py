@@ -11,7 +11,8 @@ if not app.secret_key:
     app.secret_key = os.urandom(24)
 client_id = 'f1a15dd2014f41b789ff3cc5ac81ca76'
 client_secret = '1d903db39bd5475fa8540e03b0df7735'
-redirect_uri = 'http://localhost:5000/callback'
+# redirect_uri = 'http://localhost:5000/callback'
+redirect_uri = 'http://localhost:3000'
 
 auth_url = 'https://accounts.spotify.com/authorize'
 token_url = 'https://accounts.spotify.com/api/token'
@@ -44,11 +45,23 @@ def login():
 
     }
     url = f'{auth_url}?{urllib.parse.urlencode(params)}'
-    print("my url:", url)
-    #https://accounts.spotify.com/authorize?response_type=code&client_id=f1a15dd2014f41b789ff3cc5ac81ca76&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcallback&scope=user-read-private+user-read-email+user-read-playback-state+user-modify-playback-state
-    #https://accounts.spotify.com/authorize?response_type=code&client_id=f1a15dd2014f41b789ff3cc5ac81ca76&redirect_uri=http%3A%2F%2Flocalhost%3A3000&scope=user-read-private%20user-read-email%20user-read-playback-state%20user-modify-playback-state
+    # print("my url:", url)
     return redirect(url)
 
+
+def getAccessTokenFromUrl():
+    if "code" in request.args:
+            params = {
+                'code': request.args['code'],
+                'grant_type': 'authorization_code',
+                'redirect_uri': redirect_uri,
+                'client_id': client_id,
+                'client_secret': client_secret
+            }
+            response = requests.post(token_url, data=params)
+            print(response.status_code)
+            token_info = response.json()
+            session['access_token'] = token_info['access_token']
 @app.route("/callback")
 def callback():
     print("callbacking")
@@ -68,7 +81,7 @@ def callback():
         session['access_token'] = token_info['access_token']
         print(session['access_token'])
 
-    return redirect("/")
+    return redirect("http://localhost:3000/?code="+session["access_token"])
 
 @app.route("/pause")
 def pause():
@@ -79,11 +92,11 @@ def pause():
         'Authorization': 'Bearer ' + session['access_token']
 
     }
-    print(headers)
+    # print(headers)
     response = requests.put(url, headers=headers)
-    print(response)
+    # print(response)
 
-    return redirect("/")
+    return response
 
 
 @app.route("/continuePlaying")
@@ -221,6 +234,24 @@ def upload_image():
     #     return jsonify({"message": "failed upload" + e})
 
     return jsonify({"message": "sucesfull upload"})
+
+@app.route("/loginReact")
+def loginReact():
+    print("logging in")
+    scope = 'user-read-private user-read-email user-read-playback-state user-modify-playback-state'
+    params={
+        'response_type': 'code',
+        'client_id': client_id,
+        'redirect_uri': redirect_uri,
+        'scope': scope,
+
+    }
+    url = f'{auth_url}?{urllib.parse.urlencode(params)}'
+    print("my url:", url)
+    #https://accounts.spotify.com/authorize?response_type=code&client_id=f1a15dd2014f41b789ff3cc5ac81ca76&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcallback&scope=user-read-private+user-read-email+user-read-playback-state+user-modify-playback-state
+    #https://accounts.spotify.com/authorize?response_type=code&client_id=f1a15dd2014f41b789ff3cc5ac81ca76&redirect_uri=http%3A%2F%2Flocalhost%3A3000&scope=user-read-private%20user-read-email%20user-read-playback-state%20user-modify-playback-state
+    return redirect(url)
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
     

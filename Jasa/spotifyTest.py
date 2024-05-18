@@ -39,7 +39,6 @@ def login():
 
     }
     url = f'{auth_url}?{urllib.parse.urlencode(params)}'
-
     return redirect(url)
 
 @app.route("/callback")
