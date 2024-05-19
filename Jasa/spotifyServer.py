@@ -4,6 +4,10 @@ import os
 import urllib.parse
 import base64
 import re
+import threading
+import webbrowser
+import time
+import spotifyServerHelper as helper
 
 
 app = Flask(__name__)
@@ -22,7 +26,7 @@ scope = 'user-read-private user-read-email user-read-playback-state user-modify-
 @app.route("/")
 def index():
     print("got a call")
-    # if "access_token" not in session:
+    # if "accessToken" not in session:
     #     return(redirect("/login"))
     return ("<div> <a href='/login'>login</a> </div>"
             "<div><a href='/continuePlaying'>continue</a></div>"
@@ -48,7 +52,7 @@ def login():
     # print("my url:", url)
     return redirect(url)
 
-login()
+
 def getAccessTokenFromUrl():
     if "code" in request.args:
             params = {
@@ -61,7 +65,7 @@ def getAccessTokenFromUrl():
             response = requests.post(token_url, data=params)
             print(response.status_code)
             token_info = response.json()
-            session['access_token'] = token_info['access_token']
+            session['accessToken'] = token_info['accessToken']
 @app.route("/callback")
 def callback():
     print("callbacking")
@@ -78,54 +82,58 @@ def callback():
         response = requests.post(token_url, data=params)
         print(response.status_code)
         token_info = response.json()
-        session['access_token'] = token_info['access_token']
-        print(session['access_token'])
+        session['accessToken'] = token_info['access_token']
+        print(session['accessToken'])
 
-    return redirect("http://localhost:3000/?code="+session["access_token"])
+    return redirect("http://localhost:3000/?code="+session["accessToken"])
 
-@app.route("/pause")
+@app.route("/pause",methods=['POST'])
 def pause():
-    # if "access_token" not in session:
-    #     return Response("{'message':'no access token'}", status=400, mimetype='application/json',)
     url = 'https://api.spotify.com/v1/me/player/pause'
-
-    token = ""
-    if("access_token" in session):
-        token = session['access_token']
-        
+    token = helper.checkToken(request)
+    if token is None:
+        print("log in before pause")
+        return Response('{"message":"login to spotify"}', status=403, mimetype='application/json') 
+    print("got token ", token)
     headers = {
         'Authorization': 'Bearer ' + token
 
     }
     # print(headers)
     response = requests.put(url, headers=headers)
-    print("pause status code:",response.status_code)
+    print("paused music ", response.status_code)
+    code = response.status_code
+    if(code == 204):
+        code = 200
 
+    return jsonify({"message": "paused music"}), code
 
-
-    return  Response("{'a':'b'}", status=response.status_code, mimetype='application/json')
-
-
-@app.route("/continuePlaying")
+@app.route("/continuePlaying",methods=['POST'])
 def continuePlaying():
     print("continuing")
+    token = helper.checkToken(request)
+    if token is None:
+        print("log in before continue")
+        return Response('{"message":"login to spotify"}', status=403, mimetype='application/json') 
     url = 'https://api.spotify.com/v1/me/player/play'
     headers = {
-        'Authorization': 'Bearer ' + session['access_token'],
+        'Authorization': 'Bearer ' + session['accessToken'],
         "Content-Type": "application/json"
     }
 
     response = requests.put(url, headers=headers)
     print("continue status code",response.status_code)
+    code = response.status_code
+    if(code == 204):
+        code = 200
 
-
-    return Response("{'a':'b'}", status=201, mimetype='application/json')
+    return Response('{"message":"continued playing"}', status=code, mimetype='application/json')
 @app.route("/nextSong")
 def nextSong():
     print("next song")
     url = 'https://api.spotify.com/v1/me/player/next'
     headers = {
-        'Authorization': 'Bearer ' + session['access_token']
+        'Authorization': 'Bearer ' + session['accessToken']
 
     }
 
@@ -141,7 +149,7 @@ def previousSong():
     print("previous song")
     url = 'https://api.spotify.com/v1/me/player/previous'
     headers = {
-        'Authorization': 'Bearer ' + session['access_token']
+        'Authorization': 'Bearer ' + session['accessToken']
 
     }
 
@@ -167,7 +175,7 @@ def volumeUp():
 
     url = 'https://api.spotify.com/v1/me/player/volume?volume_percent='+str(min(100,volumePercent+10))
     headers = {
-        'Authorization': 'Bearer ' + session['access_token']
+        'Authorization': 'Bearer ' + session['accessToken']
 
     }
 
@@ -192,7 +200,7 @@ def volumeDown():
 
     url = 'https://api.spotify.com/v1/me/player/volume?volume_percent='+str(max(0,volumePercent-10))
     headers = {
-        'Authorization': 'Bearer ' + session['access_token']
+        'Authorization': 'Bearer ' + session['accessToken']
 
     }
 
@@ -205,18 +213,14 @@ def getPlaybackState():
     print("getting playback")
     url = 'https://api.spotify.com/v1/me/player'
     headers = {
-        'Authorization': 'Bearer ' + session['access_token']
+        'Authorization': 'Bearer ' + session['accessToken']
 
     }
 
     response = requests.get(url, headers=headers)
     return response
 
-@app.route("/test")
-def test():
-    print("/test running")
-    response = jsonify({"message": "Hello from Flask!"})
-    return response
+
 
 @app.route('/uploadImage', methods=['POST'])
 def upload_image():
@@ -255,9 +259,8 @@ def loginReact():
     }
     url = f'{auth_url}?{urllib.parse.urlencode(params)}'
     print("my url:", url)
-    #https://accounts.spotify.com/authorize?response_type=code&client_id=f1a15dd2014f41b789ff3cc5ac81ca76&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Fcallback&scope=user-read-private+user-read-email+user-read-playback-state+user-modify-playback-state
-    #https://accounts.spotify.com/authorize?response_type=code&client_id=f1a15dd2014f41b789ff3cc5ac81ca76&redirect_uri=http%3A%2F%2Flocalhost%3A3000&scope=user-read-private%20user-read-email%20user-read-playback-state%20user-modify-playback-state
     return redirect(url)
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", debug=True)
