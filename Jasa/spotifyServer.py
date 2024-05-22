@@ -53,24 +53,25 @@ def login():
     return redirect(url)
 
 
-def getAccessTokenFromUrl():
-    if "code" in request.args:
-            params = {
-                'code': request.args['code'],
-                'grant_type': 'authorization_code',
-                'redirect_uri': redirect_uri,
-                'client_id': client_id,
-                'client_secret': client_secret
-            }
-            response = requests.post(token_url, data=params)
-            print(response.status_code)
-            token_info = response.json()
-            session['accessToken'] = token_info['accessToken']
+# def getAccessTokenFromUrl():
+#   
+#     if "code" in request.args:
+#             params = {
+#                 'code': request.args['code'],
+#                 'grant_type': 'authorization_code',
+#                 'redirect_uri': redirect_uri,
+#                 'client_id': client_id,
+#                 'client_secret': client_secret
+#             }
+#             response = requests.post(token_url, data=params)
+#             print(response.status_code)
+#             token_info = response.json()
+#             session['accessToken'] = token_info['accessToken']
 @app.route("/callback")
 def callback():
     print("callbacking")
     if "error" in request.args:
-        return jsonify({'error': request.args['error']})
+        return Response(('{"message":"'+request["error"] + '"}'), status=400, mimetype='application/json')
     if "code" in request.args:
         params = {
             'code': request.args['code'],
@@ -87,77 +88,63 @@ def callback():
 
     return redirect("http://localhost:3000/?code="+session["accessToken"])
 
-@app.route("/pause",methods=['POST'])
-def pause():
-    url = 'https://api.spotify.com/v1/me/player/pause'
+def genericSpotifyFetch(spotifyApiUrl,spotifyApiHeaders= None, sucessMessage = "suceeded", failMessage = "failed"):
     token = helper.checkToken(request)
     if token is None:
         print("log in before pause")
         return Response('{"message":"login to spotify"}', status=403, mimetype='application/json') 
-    print("got token ", token)
-    headers = {
-        'Authorization': 'Bearer ' + token
+    url = spotifyApiUrl
+    headers = ""
+    if(spotifyApiHeaders is not None):
+        headers = spotifyApiHeaders
+    else:
+        headers = {
+            'Authorization': 'Bearer ' + token
 
-    }
-    # print(headers)
-    response = requests.put(url, headers=headers)
+        }
+
+    try:
+        response = requests.put(url, headers=headers)
+    except:
+        return Response('{"message":"'+failMessage+'"}', status=400, mimetype='application/json')
     print("paused music ", response.status_code)
     code = response.status_code
     if(code == 204):
         code = 200
 
-    return jsonify({"message": "paused music"}), code
+    return Response('{"message":"' +sucessMessage+'"}', status=code, mimetype='application/json') 
+
+@app.route("/pause",methods=['POST'])
+def pause():
+    url = 'https://api.spotify.com/v1/me/player/pause'
+    sucessMessage="paused the song"
+    failMessage="failed to pause the song"
+    return genericSpotifyFetch(url, sucessMessage=sucessMessage , failMessage=failMessage)
 
 @app.route("/continuePlaying",methods=['POST'])
 def continuePlaying():
     print("continuing")
-    token = helper.checkToken(request)
-    if token is None:
-        print("log in before continue")
-        return Response('{"message":"login to spotify"}', status=403, mimetype='application/json') 
     url = 'https://api.spotify.com/v1/me/player/play'
-    headers = {
-        'Authorization': 'Bearer ' + session['accessToken'],
-        "Content-Type": "application/json"
-    }
+    sucessMessage="continued playing"
+    failMessage="failed to continue playing"
+    return genericSpotifyFetch(url, sucessMessage=sucessMessage , failMessage=failMessage)
 
-    response = requests.put(url, headers=headers)
-    print("continue status code",response.status_code)
-    code = response.status_code
-    if(code == 204):
-        code = 200
-
-    return Response('{"message":"continued playing"}', status=code, mimetype='application/json')
 @app.route("/nextSong")
 def nextSong():
     print("next song")
     url = 'https://api.spotify.com/v1/me/player/next'
-    headers = {
-        'Authorization': 'Bearer ' + session['accessToken']
-
-    }
-
-    response = requests.post(url, headers=headers)
-    print(response)
-
-
-    return redirect("/")
-
+    sucessMessage="rewound to next song"
+    failMessage="failed to go to the next song"
+    return genericSpotifyFetch(url, sucessMessage=sucessMessage , failMessage=failMessage)
 
 @app.route("/previousSong")
 def previousSong():
     print("previous song")
     url = 'https://api.spotify.com/v1/me/player/previous'
-    headers = {
-        'Authorization': 'Bearer ' + session['accessToken']
+    sucessMessage="rewound to previous song"
+    failMessage="failed to go to previous song"
+    return genericSpotifyFetch(url, sucessMessage=sucessMessage , failMessage=failMessage)
 
-    }
-
-    response = requests.post(url, headers=headers)
-    print(response)
-
-
-    return redirect("/")
 
 
 @app.route("/volumeUp")
@@ -174,16 +161,9 @@ def volumeUp():
 
 
     url = 'https://api.spotify.com/v1/me/player/volume?volume_percent='+str(min(100,volumePercent+10))
-    headers = {
-        'Authorization': 'Bearer ' + session['accessToken']
-
-    }
-
-    response = requests.put(url, headers=headers)
-    print(response)
-
-
-    return redirect("/")
+    sucessMessage="increased volume"
+    failMessage="failed failed to increase volume"
+    return genericSpotifyFetch(url, sucessMessage=sucessMessage , failMessage=failMessage)
 
 @app.route("/volumeDown")
 def volumeDown():
@@ -196,27 +176,18 @@ def volumeDown():
         volumePercent = volumeData["device"]["volume_percent"]
     print("got volume :",volumePercent)
 
-
-
     url = 'https://api.spotify.com/v1/me/player/volume?volume_percent='+str(max(0,volumePercent-10))
-    headers = {
-        'Authorization': 'Bearer ' + session['accessToken']
+    sucessMessage="lowered volume"
+    failMessage="failed to lower volume"
+    return genericSpotifyFetch(url, sucessMessage=sucessMessage , failMessage=failMessage)
 
-    }
-
-    response = requests.put(url, headers=headers)
-    print(response)
-
-
-    return redirect("/")
 def getPlaybackState():
+    token = helper.checkToken(request)
     print("getting playback")
     url = 'https://api.spotify.com/v1/me/player'
     headers = {
-        'Authorization': 'Bearer ' + session['accessToken']
-
+        'Authorization': 'Bearer ' + token
     }
-
     response = requests.get(url, headers=headers)
     return response
 
