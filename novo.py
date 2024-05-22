@@ -86,17 +86,26 @@ import tensorflow as tf
 # Build the model
 from tensorflow.keras import layers, models
 
-# Build the model
+# model = models.Sequential([
+#     layers.Input(shape=(X_train.shape[1], X_train.shape[2], 1)),
+#     layers.Conv2D(32, (3, 3), activation='relu'),
+#     layers.MaxPooling2D((2, 2)),
+#     layers.Conv2D(64, (3, 3), activation='relu'),
+#     layers.MaxPooling2D((2, 2)),
+#     layers.Flatten(),
+#     layers.Dense(128, activation='relu'),
+#     layers.Dropout(0.5),
+#     layers.Dense(4, activation='softmax')
+# ])
+
 model = models.Sequential([
     layers.Input(shape=(X_train.shape[1], X_train.shape[2], 1)),
-    layers.Conv2D(64, (3, 3), activation='relu'),
+    layers.Conv2D(32, (3, 3), activation='relu'),
     layers.MaxPooling2D((2, 2)),
-    layers.Conv2D(128, (3, 3), activation='relu'),
-    layers.MaxPooling2D((2, 2)),
-    layers.Conv2D(256, (3, 3), activation='relu'),
+    layers.Conv2D(32, (3, 3), activation='relu'),
     layers.MaxPooling2D((2, 2)),
     layers.Flatten(),
-    layers.Dense(256, activation='relu'),
+    layers.Dense(128, activation='relu'),
     layers.Dropout(0.5),
     layers.Dense(4, activation='softmax')
 ])
@@ -104,14 +113,35 @@ model = models.Sequential([
 
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-# Train the model
-history = model.fit(X_train, y_train, epochs=30, validation_data=(X_val, y_val))
+history = model.fit(X_train, y_train, epochs=20, validation_data=(X_val, y_val))
+# history = model.fit(X_train, y_train, epochs=30, validation_data=(X_val, y_val), callbacks=[
+#     tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
+# ])
 
-# Save the model
-model.save('voice_command_model.h5')
+model.save('voice_command_model_v2.h5')
 
 
 # Evaluate the model
 loss, accuracy = model.evaluate(X_val, y_val)
 print(f"Validation Loss: {loss}")
 print(f"Validation Accuracy: {accuracy}")
+
+import matplotlib.pyplot as plt
+
+# Plot training & validation accuracy values
+plt.plot(history.history['accuracy'])
+plt.plot(history.history['val_accuracy'])
+plt.title('Model accuracy')
+plt.ylabel('Accuracy')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Validation'], loc='upper left')
+plt.show()
+
+# Plot training & validation loss values
+plt.plot(history.history['loss'])
+plt.plot(history.history['val_loss'])
+plt.title('Model loss')
+plt.ylabel('Loss')
+plt.xlabel('Epoch')
+plt.legend(['Train', 'Validation'], loc='upper left')
+plt.show()
