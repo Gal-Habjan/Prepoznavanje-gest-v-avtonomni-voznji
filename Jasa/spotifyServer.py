@@ -4,13 +4,23 @@ import os
 import urllib.parse
 import base64
 import re
-import threading
-import webbrowser
 import time
-import spotifyServerHelper as helper
+from spotifyServerHelper import genericSpotifyFetch, getPlaybackState
+
+
+#for the ai
+import numpy as np
+import cv2
+from shell_image import edge_detection
+import torchvision.transforms as transforms
+from ultralytics import YOLO
 
 
 app = Flask(__name__)
+path_to_best = "./best.pt"
+model = None
+
+
 if not app.secret_key:
     app.secret_key = os.urandom(24)
 client_id = 'f1a15dd2014f41b789ff3cc5ac81ca76'
@@ -40,7 +50,7 @@ def index():
 @app.route("/login")
 def login():
     print("logging in")
-    scope = 'user-read-private user-read-email user-read-playback-state user-modify-playback-state'
+    scope = 'user-read-private user-read-playback-state user-modify-playback-state'
     params={
         'response_type': 'code',
         'client_id': client_id,
@@ -88,31 +98,7 @@ def callback():
 
     return redirect("http://localhost:3000/?code="+session["accessToken"])
 
-def genericSpotifyFetch(spotifyApiUrl,spotifyApiHeaders= None, sucessMessage = "suceeded", failMessage = "failed"):
-    token = helper.checkToken(request)
-    if token is None:
-        print("log in before pause")
-        return Response('{"message":"login to spotify"}', status=403, mimetype='application/json') 
-    url = spotifyApiUrl
-    headers = ""
-    if(spotifyApiHeaders is not None):
-        headers = spotifyApiHeaders
-    else:
-        headers = {
-            'Authorization': 'Bearer ' + token
 
-        }
-
-    try:
-        response = requests.put(url, headers=headers)
-    except:
-        return Response('{"message":"'+failMessage+'"}', status=400, mimetype='application/json')
-    print("paused music ", response.status_code)
-    code = response.status_code
-    if(code == 204):
-        code = 200
-
-    return Response('{"message":"' +sucessMessage+'"}', status=code, mimetype='application/json') 
 
 @app.route("/pause",methods=['POST'])
 def pause():
@@ -129,32 +115,32 @@ def continuePlaying():
     failMessage="failed to continue playing"
     return genericSpotifyFetch(url, sucessMessage=sucessMessage , failMessage=failMessage)
 
-@app.route("/nextSong")
+@app.route("/nextSong",methods=['POST'])
 def nextSong():
     print("next song")
     url = 'https://api.spotify.com/v1/me/player/next'
     sucessMessage="rewound to next song"
     failMessage="failed to go to the next song"
-    return genericSpotifyFetch(url, sucessMessage=sucessMessage , failMessage=failMessage)
+    return genericSpotifyFetch(url, method="POST", sucessMessage=sucessMessage , failMessage=failMessage)
 
-@app.route("/previousSong")
+@app.route("/previousSong",methods=['POST'])
 def previousSong():
     print("previous song")
     url = 'https://api.spotify.com/v1/me/player/previous'
     sucessMessage="rewound to previous song"
     failMessage="failed to go to previous song"
-    return genericSpotifyFetch(url, sucessMessage=sucessMessage , failMessage=failMessage)
+    return genericSpotifyFetch(url,method="POST", sucessMessage=sucessMessage , failMessage=failMessage)
 
 
 
-@app.route("/volumeUp")
+@app.route("/volumeUp",methods=['POST'])
 def volumeUp():
     print("volume up")
-
     playback = getPlaybackState()
     volumePercent = -1
     if(playback.status_code < 300):
         volumeData = playback.json()
+        print(volumeData)
         volumePercent = volumeData["device"]["volume_percent"]
     print("got volume :",volumePercent)
 
@@ -165,7 +151,7 @@ def volumeUp():
     failMessage="failed failed to increase volume"
     return genericSpotifyFetch(url, sucessMessage=sucessMessage , failMessage=failMessage)
 
-@app.route("/volumeDown")
+@app.route("/volumeDown",methods=['POST'])
 def volumeDown():
     print("volumeDown")
 
@@ -181,41 +167,94 @@ def volumeDown():
     failMessage="failed to lower volume"
     return genericSpotifyFetch(url, sucessMessage=sucessMessage , failMessage=failMessage)
 
-def getPlaybackState():
-    token = helper.checkToken(request)
-    print("getting playback")
-    url = 'https://api.spotify.com/v1/me/player'
-    headers = {
-        'Authorization': 'Bearer ' + token
-    }
-    response = requests.get(url, headers=headers)
-    return response
 
+@app.route("/getState",methods=['POST'])
+def getState():
+    print("getting state")
+    playback = getPlaybackState()
+    print(playback.json())
+    print("returning state")
+    return playback.json()
 
 
 @app.route('/uploadImage', methods=['POST'])
 def upload_image():
-    print("started upload")
+    print("started upload----------------")
     data = request.json
     image_data_url = data.get('image')
     try:
-        print("started upload2")
+        # print("started upload2")
         base64_str = re.search(r'base64,(.*)', image_data_url).group(1)
         image_data = base64.b64decode(base64_str)
+        imageArray = np.frombuffer(image_data, dtype=np.uint8)
+        image = cv2.imdecode(imageArray, cv2.IMREAD_COLOR)
+        # print("arr shape " , imageArray.shape)
+
+        if image is not None:
+            print("Array shape:", image.shape)
+        else:
+            print("Failed to decode image")
 
 
-        with open('uploaded_image.png', 'wb') as f:
-            f.write(image_data)
+        # with open('./uploaded_image.png', 'wb') as f:
+        #     f.write(image_data)
 
-        print("Image successfully uploaded")
-        return jsonify({'message': 'Image uploaded successfully'}), 200
+
+        # print("starting image processing ")
+        try:
+            sign = processImage(image)
+        except Exception as err:
+            print("error as ", err)
+        if(sign is None):
+            sign = "none result"
+        print("Image successfully uploaded with sign", sign)
+        return Response('{"body": "Image uploaded successfully","sign":"' + sign +'"}', status=200, mimetype='application/json')
+
     except :
         print("Error during upload:")
-        return jsonify({'error': 'Failed to upload image'}), 500
-    # except(e):
-    #     return jsonify({"message": "failed upload" + e})
+        return Response('{"message": "Failed to upload image"}', status=400, mimetype='application/json')
+    
 
-    return jsonify({"message": "sucesfull upload"})
+def processImage(image):
+    image = np.array(image)
+    print("shape",image.shape)
+
+    # print("tensoreding the image", image.shape, " " , type(image))
+    to_tensor = transforms.Compose([
+        transforms.ToTensor()
+    ])
+    # print("got the to_tensor")
+    input = to_tensor(image)
+    # print("tensored the image")
+    input = input.unsqueeze(0)
+    # print("unsqueezed the image")
+    try:
+        print("getting results")
+        results = model(input)
+        print("printing results")
+    except Exception as err:
+        print("error ", err)
+    # print("got results" , results)
+    probs = []
+    for result in results:
+        result.save(filename='result1.jpg')#todo why does this save to result.jpg, even when the name is different
+        boxes = result.boxes  # Boxes object for bounding box outputs
+        print("getting result" , result.names)
+        # print("got boxes" , result[0])
+        xyxys = boxes.conf
+        # print("box", boxes)
+        # print("xyxy " , xyxys, boxes.cls[0])
+        if(len(boxes.cls) > 0):
+            return result.names[int(boxes.cls[0].item())]
+        # masks = result.masks  # Masks object for segmentation masks outputs
+        # keypoints = result.keypoints  # Keypoints object for pose outputs
+        probs.append(result.probs)  # Probs object for classification outputs
+        # obb = result.obb  # Oriented boxes object for OBB outputs
+        # result.show()  # display to screen
+        # result.save(filename='result.jpg')
+        # app.setup_box(boxes, probs)
+    print("returning AI result "," none ")
+    return probs
 
 @app.route("/loginReact")
 def loginReact():
@@ -234,5 +273,7 @@ def loginReact():
 
 
 if __name__ == "__main__":
+    model = YOLO(path_to_best)   
     app.run(host="0.0.0.0", debug=True)
+
     

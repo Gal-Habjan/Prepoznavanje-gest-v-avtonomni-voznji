@@ -7,7 +7,7 @@ import os
 import torchvision.transforms as transforms
 import spotifyApp
 
-path_to_best = "runs/detect/train6/weights/best.pt"
+path_to_best = "./runs/detect/train6/weights/best.pt"
 model = None
 
 
