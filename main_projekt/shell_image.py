@@ -49,36 +49,88 @@ def reduce_points(points, max_points):
         points = np.array(new_points)
     return points
 def get_mask(img):
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gray = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
-    hsv = cv2.cvtColor(gray, cv2.COLOR_BGR2HSV)
+    kernel = np.ones((13, 13), np.uint8)
+    # gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # gray = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
+    # hsv = cv2.cvtColor(gray, cv2.COLOR_BGR2HSV)
+    # # print(hsv)
+    # mask = cv2.inRange(hsv, np.array([0,0,70]), np.array([0,0,130]))
+    # contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    #
+    # h, w, _ = img.shape
+    # center = h // 2, w // 2
+    # print(len(contours))
+    #
+    # for cnt in contours:
+    #
+    #     if cv2.contourArea(cnt) >5000:
+    #          if cv2.pointPolygonTest(cnt, center, False) > 0:
+    #             print(cv2.contourArea(cnt))
+    #             mask = np.zeros((h, w), 'uint8')
+    #             cv2.drawContours(mask, [cnt], -1, 255, -1)
+    #             return cv2.bitwise_and(img, img, mask=mask)
+    #
+    #     # gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # gray = cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
+    # hsv = cv2.cvtColor(gray, cv2.COLOR_BGR2HSV)
     # print(hsv)
-    mask = cv2.inRange(hsv, np.array([0,0,70]), np.array([0,0,130]))
+    # mask = cv2.inRange(hsv, np.array([0,0,70]), np.array([0,0,130]))
+    original = img
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    # _, bin_img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
+    # bin_img = bin_img.astype(bool)
+    # blurred_image = cv2.GaussianBlur(img, (3, 3), 0)
+
+    # Perform Canny edge detection
+    edges = cv2.Canny(img, threshold1=30, threshold2=120)
+
+    _, bin_img = cv2.threshold(edges, 127, 255, cv2.THRESH_BINARY)
+    # print(bin_img)
+    kernel = np.ones((5, 5), np.uint8)
+    dilate_kernel = np.ones((7, 7), np.uint8)
+    bin_img = cv2.morphologyEx(bin_img, cv2.MORPH_DILATE, dilate_kernel)
+    bin_img = cv2.morphologyEx(bin_img, cv2.MORPH_CLOSE, kernel)
+    # print(mask)
+    mask = np.bitwise_not(bin_img)
+    # print(mask)
+    # mask = mask.astype(np.uint8)*255
+
+    # return mask*255
+    # Step 2: Combine the gradients to get the overall edge response
+    # gradient_magnitude = np.hypot(sobel_x, sobel_y)
+    # gradient_magnitude = gradient_magnitude / np.max(gradient_magnitude) * 255  # Normalize to range 0-255
+    # gradient_magnitude = gradient_magnitude.astype(np.uint8)
+    # return gradient_magnitude
+    # mask = ndimage.binary_closing(gradient_magnitude, kernel).astype(np.uint8)
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-    h, w, _ = img.shape
+    h, w = img.shape
     center = h // 2, w // 2
     print(len(contours))
 
     for cnt in contours:
 
-        if cv2.contourArea(cnt) >5000:
-             if cv2.pointPolygonTest(cnt, center, False) > 0:
-                print(cv2.contourArea(cnt))
-                mask = np.zeros((h, w), 'uint8')
-                cv2.drawContours(mask, [cnt], -1, 255, -1)
-                return cv2.bitwise_and(img, img, mask=mask)
+        # if cv2.contourArea(cnt) > 5000:
+        print(cv2.pointPolygonTest(cnt, center, True))
+        if cv2.pointPolygonTest(cnt, center, False) > 0:
+            print(cv2.contourArea(cnt))
+            mask = np.zeros((h, w), 'uint8')
+            cv2.drawContours(mask, [cnt], -1, 255, -1)
+            return cv2.bitwise_and(original, original, mask=mask)
+
+    # print("errr")
 def get_hull_from_image(image):
     # start_time = time.time()
     img = get_mask(image)
+    print(img)
     if img is not None and len(img)>0:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     else:
         img = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    print(img.shape)
-    print(img.shape)
-
-    print("GOT IMAGE MASK")
+    # print(img.shape)
+    # print(img.shape)
+    #
+    # print("GOT IMAGE MASK")
     img = cv2.medianBlur(img, 5)
     img_edge = edge_detection(img)
     threshold = 128
