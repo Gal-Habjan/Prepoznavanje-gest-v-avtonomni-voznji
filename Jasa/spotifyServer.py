@@ -6,7 +6,7 @@ import base64
 import re
 import time
 from spotifyServerHelper import genericSpotifyFetch, getPlaybackState
-
+from PIL import Image
 
 #for the ai
 import numpy as np
@@ -35,6 +35,7 @@ base_url = 'https://api.spotify.com/v1/'
 scope = 'user-read-private user-read-email user-read-playback-state user-modify-playback-state'  # Add necessary scopes here
 @app.route("/")
 def index():
+    #unused
     print("got a call")
     # if "accessToken" not in session:
     #     return(redirect("/login"))
@@ -49,6 +50,7 @@ def index():
 
 @app.route("/login")
 def login():
+    #loggs the user into the spotify, then redirects to the callback backend page with the AccessToken in the url
     print("logging in")
     scope = 'user-read-private user-read-playback-state user-modify-playback-state'
     params={
@@ -63,22 +65,9 @@ def login():
     return redirect(url)
 
 
-# def getAccessTokenFromUrl():
-#   
-#     if "code" in request.args:
-#             params = {
-#                 'code': request.args['code'],
-#                 'grant_type': 'authorization_code',
-#                 'redirect_uri': redirect_uri,
-#                 'client_id': client_id,
-#                 'client_secret': client_secret
-#             }
-#             response = requests.post(token_url, data=params)
-#             print(response.status_code)
-#             token_info = response.json()
-#             session['accessToken'] = token_info['accessToken']
 @app.route("/callback")
 def callback():
+    #saves the token to session storage, then redirects to the frontend with the same token in the url
     print("callbacking")
     if "error" in request.args:
         return Response(('{"message":"'+request["error"] + '"}'), status=400, mimetype='application/json')
@@ -102,6 +91,7 @@ def callback():
 
 @app.route("/pause",methods=['POST'])
 def pause():
+    #pauses the song, returns an error if already paused
     url = 'https://api.spotify.com/v1/me/player/pause'
     sucessMessage="paused the song"
     failMessage="failed to pause the song"
@@ -109,6 +99,7 @@ def pause():
 
 @app.route("/continuePlaying",methods=['POST'])
 def continuePlaying():
+    #unpauses the song, returns an error if already playing
     print("continuing")
     url = 'https://api.spotify.com/v1/me/player/play'
     sucessMessage="continued playing"
@@ -117,6 +108,7 @@ def continuePlaying():
 
 @app.route("/nextSong",methods=['POST'])
 def nextSong():
+    #goes to the prev song in queue
     print("next song")
     url = 'https://api.spotify.com/v1/me/player/next'
     sucessMessage="rewound to next song"
@@ -125,16 +117,16 @@ def nextSong():
 
 @app.route("/previousSong",methods=['POST'])
 def previousSong():
+    #goes to the prev song in queue
     print("previous song")
     url = 'https://api.spotify.com/v1/me/player/previous'
     sucessMessage="rewound to previous song"
     failMessage="failed to go to previous song"
     return genericSpotifyFetch(url,method="POST", sucessMessage=sucessMessage , failMessage=failMessage)
 
-
-
 @app.route("/volumeUp",methods=['POST'])
 def volumeUp():
+    #increases volume by 10, returns the sucess/fail message and code
     print("volume up")
     playback = getPlaybackState()
     volumePercent = -1
@@ -153,6 +145,7 @@ def volumeUp():
 
 @app.route("/volumeDown",methods=['POST'])
 def volumeDown():
+    #decreases volume by 10, returns the sucess/fail message and code
     print("volumeDown")
 
     playback = getPlaybackState()
@@ -170,16 +163,18 @@ def volumeDown():
 
 @app.route("/getState",methods=['POST'])
 def getState():
+    #returns a json document containing the state of the spotify account
+
     print("getting state")
     playback = getPlaybackState()
-    print(playback.json())
+    # print(playback)
     print("returning state")
-    return playback.json()
+    return playback
 
 
 @app.route('/uploadImage', methods=['POST'])
 def upload_image():
-    print("started upload----------------")
+    # print("started upload----------------")
     data = request.json
     image_data_url = data.get('image')
     try:
@@ -190,10 +185,10 @@ def upload_image():
         image = cv2.imdecode(imageArray, cv2.IMREAD_COLOR)
         # print("arr shape " , imageArray.shape)
 
-        if image is not None:
-            print("Array shape:", image.shape)
-        else:
-            print("Failed to decode image")
+        # if image is not None:
+        #     print("Array shape:", image.shape)
+        # else:
+        #     print("Failed to decode image")
 
 
         # with open('./uploaded_image.png', 'wb') as f:
@@ -206,8 +201,9 @@ def upload_image():
         except Exception as err:
             print("error as ", err)
         if(sign is None):
-            sign = "none result"
-        print("Image successfully uploaded with sign", sign)
+            sign = "no gesture"
+        # print("Image successfully uploaded with sign", sign)
+        #todo return image containing box
         return Response('{"body": "Image uploaded successfully","sign":"' + sign +'"}', status=200, mimetype='application/json')
 
     except :
@@ -216,8 +212,8 @@ def upload_image():
     
 
 def processImage(image):
-    image = np.array(image)
-    print("shape",image.shape)
+    image = Image.fromarray(image)
+    # print("shape",image.shape)
 
     # print("tensoreding the image", image.shape, " " , type(image))
     to_tensor = transforms.Compose([
@@ -229,32 +225,31 @@ def processImage(image):
     input = input.unsqueeze(0)
     # print("unsqueezed the image")
     try:
-        print("getting results")
-        results = model(input)
-        print("printing results")
+        # print("getting results")
+        results = model(input, verbose=False)
+        # print("printing results")
     except Exception as err:
         print("error ", err)
     # print("got results" , results)
     probs = []
+
     for result in results:
-        result.save(filename='result1.jpg')#todo why does this save to result.jpg, even when the name is different
+        # result.save(filename='result1.jpg')#todo why does this save to result.jpg, even when the name is different
         boxes = result.boxes  # Boxes object for bounding box outputs
-        print("getting result" , result.names)
+        # print("getting result" , result.names)
         # print("got boxes" , result[0])
         xyxys = boxes.conf
         # print("box", boxes)
         # print("xyxy " , xyxys, boxes.cls[0])
         if(len(boxes.cls) > 0):
-            return result.names[int(boxes.cls[0].item())]
-        # masks = result.masks  # Masks object for segmentation masks outputs
-        # keypoints = result.keypoints  # Keypoints object for pose outputs
-        probs.append(result.probs)  # Probs object for classification outputs
-        # obb = result.obb  # Oriented boxes object for OBB outputs
-        # result.show()  # display to screen
-        # result.save(filename='result.jpg')
-        # app.setup_box(boxes, probs)
-    print("returning AI result "," none ")
-    return probs
+            # print("boxes", boxes.cls[0].item())
+            # print("names", result.names[int(boxes.cls[0].item())])
+            val =  result.names[int(boxes.cls[0].item())]
+            print("val \033[94m" + val + '\033[0m')
+            return val
+
+
+    return None
 
 @app.route("/loginReact")
 def loginReact():

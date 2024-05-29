@@ -51,12 +51,18 @@ def genericSpotifyFetch(spotifyApiUrl, method = "PUT",spotifyApiHeaders= None, s
     
 def getPlaybackState():
     token = checkToken()
+    if token is None:
+        print("log in before pause")
+        return Response('{"message":"login to spotify"}', status=403, mimetype='application/json') 
     print("getting playback")
     url = 'https://api.spotify.com/v1/me/player'
     headers = {
         'Authorization': 'Bearer ' + token
     }
     response = requests.get(url, headers=headers)
+    if(response.status_code == 204):
+        print("ERROR no device connected")
     
 
-    return response
+
+    return response.json()
