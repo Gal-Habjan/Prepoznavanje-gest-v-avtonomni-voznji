@@ -71,7 +71,6 @@ class CameraApp:
         self.master.destroy()
 
     def snapshot(self):
-
         ret, frame = self.vid.read()
         if ret:
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -80,19 +79,22 @@ class CameraApp:
             return pil_image
 
     def call_spotify(self, gesture):
-        function = gestures_features_dict[gesture]
-        if function == Features.NEXT_SONG:
-            spotifyApp.call_next_song()
+        try:
+            function = gestures_features_dict[gesture]
+            if function == Features.NEXT_SONG:
+                spotifyApp.call_next_song()
 
-        elif function == Features.TOGGLE_PAUSE:
+            elif function == Features.TOGGLE_PAUSE:
 
-            spotifyApp.call_toggle_pause()
+                spotifyApp.call_toggle_pause()
 
-        elif function == Features.TURN_UP_VOL:
-            spotifyApp.call_volume_up()
+            elif function == Features.TURN_UP_VOL:
+                spotifyApp.call_volume_up()
 
-        elif function == Features.TURN_DOWN_VOL:
-            spotifyApp.call_volume_down()
+            elif function == Features.TURN_DOWN_VOL:
+                spotifyApp.call_volume_down()
+        except Exception as e:
+            print("Exception while calling spotify", e)
         time.sleep(1)
 
     def draw_hull_on_image(self,original_image, hull, offset=(0, 0)):
