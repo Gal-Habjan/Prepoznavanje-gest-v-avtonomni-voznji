@@ -130,10 +130,10 @@ def volumeUp():
     print("volume up")
     playback = getPlaybackState()
     volumePercent = -1
-    if(playback.status_code < 300):
-        volumeData = playback.json()
-        print(volumeData)
-        volumePercent = volumeData["device"]["volume_percent"]
+    # print(playback)
+    volumeData = playback
+    # print(volumeData)
+    volumePercent = volumeData["device"]["volume_percent"]
     print("got volume :",volumePercent)
 
 
@@ -150,9 +150,9 @@ def volumeDown():
 
     playback = getPlaybackState()
     volumePercent = -1
-    if(playback.status_code < 300):
-        volumeData = playback.json()
-        volumePercent = volumeData["device"]["volume_percent"]
+    # print(playback)
+    volumeData = playback.json()
+    volumePercent = volumeData["device"]["volume_percent"]
     print("got volume :",volumePercent)
 
     url = 'https://api.spotify.com/v1/me/player/volume?volume_percent='+str(max(0,volumePercent-10))
@@ -165,10 +165,10 @@ def volumeDown():
 def getState():
     #returns a json document containing the state of the spotify account
 
-    print("getting state")
+    # print("getting state")
     playback = getPlaybackState()
     # print(playback)
-    print("returning state")
+    # print("returning state")
     return playback
 
 
@@ -183,19 +183,6 @@ def upload_image():
         image_data = base64.b64decode(base64_str)
         imageArray = np.frombuffer(image_data, dtype=np.uint8)
         image = cv2.imdecode(imageArray, cv2.IMREAD_COLOR)
-        # print("arr shape " , imageArray.shape)
-
-        # if image is not None:
-        #     print("Array shape:", image.shape)
-        # else:
-        #     print("Failed to decode image")
-
-
-        # with open('./uploaded_image.png', 'wb') as f:
-        #     f.write(image_data)
-
-
-        # print("starting image processing ")
         try:
             sign = processImage(image)
         except Exception as err:

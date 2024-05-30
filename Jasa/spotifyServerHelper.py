@@ -2,7 +2,7 @@ import requests
 from flask import Flask, render_template, request, redirect, url_for,jsonify,session, make_response, Response
 
 def checkToken():
-    print("checking token")
+    # print("checking token")
     body = request.get_json()
     token = ""
     if "token" in body and "accessToken" not in session:
@@ -52,9 +52,9 @@ def genericSpotifyFetch(spotifyApiUrl, method = "PUT",spotifyApiHeaders= None, s
 def getPlaybackState():
     token = checkToken()
     if token is None:
-        print("log in before pause")
+        print("log in first")
         return Response('{"message":"login to spotify"}', status=403, mimetype='application/json') 
-    print("getting playback")
+    # print("getting playback")
     url = 'https://api.spotify.com/v1/me/player'
     headers = {
         'Authorization': 'Bearer ' + token
