@@ -8,14 +8,12 @@ import pyaudio
 import wave
 import simpleaudio as sa
 
-# Preprocess audio file to mel spectrogram
 def preprocess_audio(file_path, n_mels=128, n_fft=2048, hop_length=512):
     y, sr = librosa.load(file_path, sr=None)
     mel_spec = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=n_mels, n_fft=n_fft, hop_length=hop_length)
     mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
     return mel_spec_db
 
-# Predict command using the trained model
 def predict_command(file_path, model, commands):
     mel_spec_db = preprocess_audio(file_path)
     mel_spec_db = mel_spec_db[np.newaxis, ..., np.newaxis]  # Add batch and channel dimensions
@@ -26,7 +24,6 @@ def predict_command(file_path, model, commands):
     return predicted_command, certainties
 
 
-# Record audio function
 def record_audio(output_file, duration=5):
     chunk = 1024
     sample_format = pyaudio.paInt16
@@ -65,17 +62,20 @@ def record_audio(output_file, duration=5):
     wf.writeframes(b''.join(frames))
     wf.close()
 
-# Playback audio function
+# playback audio function
 def play_audio(file_path):
     wave_obj = sa.WaveObject.from_wave_file(file_path)
     play_obj = wave_obj.play()
-    play_obj.wait_done()  # Wait until sound has finished playing
+    play_obj.wait_done()
 
-# Load the trained model
-model = tf.keras.models.load_model('voice_command_model.h5')
+model = tf.keras.models.load_model('voice_command_model_with_droupout_HAO.h5')
+# model = tf.keras.models.load_model('voice_command_model_v2.h5')
+# model = tf.keras.models.load_model('voice_command_model_v2_novo.h5') # u petek ta
+
+
+
 commands = ["next_song", "pause", "volume_down", "volume_up"]
 
-# Function to start recording and predict command
 def start_recording():
     output_file = "recorded_audio.wav"
     print("Press the spacebar to start recording...")
@@ -87,5 +87,11 @@ def start_recording():
         predicted_command = predict_command(output_file, model, commands)
         print(f"Predicted Command: {predicted_command}")
 
-# Start the recording and prediction loop
 start_recording()
+
+
+#dober dan jasa tu je zeljena funkccija
+def predict_from_wav(file_path, model, commands): #zeli met wav, list of commands in model
+    # tu mas commands = ["next_song", "pause", "volume_down", "volume_up"]
+    predicted_command, certainties = predict_command(file_path, model, commands)
+    return predicted_command
