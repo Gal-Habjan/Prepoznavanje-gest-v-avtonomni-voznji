@@ -15,11 +15,21 @@ from shell_image import edge_detection
 import torchvision.transforms as transforms
 from ultralytics import YOLO
 
+from prometheus_client import start_http_server, Counter
+
+prom_fist = Counter('prom_fist', 'Number of fists detected')
+prom_peace = Counter('prom_peace', 'Number of peace signs detected')
+prom_thumbsUp = Counter('prom_thumbsUp', 'Number of thumbs up detected')
+prom_hand = Counter('prom_hand', 'Number of hands detected')
+prom_empty = Counter('prom_empty', 'Number of images without gestures')
+prom_error = Counter('prom_error', 'Number of errors')
+
+
 
 app = Flask(__name__)
-path_to_best = "./best.pt"
+path_to_best = "./Jasa/best.pt"
 model = None
-
+start_http_server(8000) 
 
 if not app.secret_key:
     app.secret_key = os.urandom(24)
@@ -85,7 +95,7 @@ def callback():
         session['accessToken'] = token_info['access_token']
         print(session['accessToken'])
 
-    return redirect("http://localhost:3000/?code="+session["accessToken"])
+    return redirect("http://localhost:3001/?code="+session["accessToken"])
 
 
 
@@ -129,6 +139,8 @@ def volumeUp():
     #increases volume by 10, returns the sucess/fail message and code
     print("volume up")
     playback = getPlaybackState()
+    if(playback is None):
+        return
     volumePercent = -1
     # print(playback)
     volumeData = playback
@@ -149,9 +161,11 @@ def volumeDown():
     print("volumeDown")
 
     playback = getPlaybackState()
+    if(playback is None):
+        return
     volumePercent = -1
     # print(playback)
-    volumeData = playback.json()
+    volumeData = playback
     volumePercent = volumeData["device"]["volume_percent"]
     print("got volume :",volumePercent)
 
@@ -167,6 +181,8 @@ def getState():
 
     # print("getting state")
     playback = getPlaybackState()
+    if(playback is None):
+        return
     # print(playback)
     # print("returning state")
     return playback
@@ -195,6 +211,7 @@ def upload_image():
 
     except :
         print("Error during upload:")
+        prom_error.inc(1)
         return Response('{"message": "Failed to upload image"}', status=400, mimetype='application/json')
     
 
@@ -233,9 +250,27 @@ def processImage(image):
             # print("names", result.names[int(boxes.cls[0].item())])
             val =  result.names[int(boxes.cls[0].item())]
             print("val \033[94m" + val + '\033[0m')
+            match val:
+                case "fist":
+                    prom_fist.inc(1)
+                    print("increasing fist counter", prom_fist)
+                case "hand":
+                    prom_hand.inc(1)
+                    print("increasing hand counter")
+                case "peace":
+                    prom_peace.inc(1)
+                    print("increasing peace counter")
+                case "thumbs up":
+                    prom_thumbsUp.inc(1)
+                    print("increasing thumbs counter")
+                case "none":
+                    prom_empty.inc(1)
+                    print("increasing empty counter")
+                    
             return val
 
 
+    prom_empty.inc(1)
     return None
 
 @app.route("/loginReact")
@@ -255,7 +290,7 @@ def loginReact():
 
 
 if __name__ == "__main__":
-    model = YOLO(path_to_best)   
+    model = YOLO(path_to_best)  
     app.run(host="0.0.0.0", debug=True)
 
     

@@ -44,7 +44,7 @@ function App() {
     // Set up the interval
     const id = setInterval(stateUpdatesFunc, 5000);
 
-    // Store the interval ID in the ref
+    // Store the interval ID in the re  f
     stateRefresherIdRef.current = id;
 
     // Cleanup function to clear the interval
