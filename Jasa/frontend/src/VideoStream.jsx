@@ -2,7 +2,7 @@ import { Button } from "antd";
 import { useState,useRef } from "react";
 import {pauseMusic, continueMusic, volumeDown, volumeUp, nextSong, prevSong} from "./commands"
 const VideoStream = (props)=>{
-    const captureRate = 2 //how many times per second
+    const captureRate = 1 //how many times per second
     const commandDelay = 2000 //delay after a command is recognised before a new one can be sent
     
 
@@ -65,7 +65,9 @@ const VideoStream = (props)=>{
   
         const imageDataUrl = canvas.toDataURL('image/jpeg',imageResolution).replace("image/jpeg", "image/octet-stream");
         // console.log("sending image")
-        photoRef.current.src = imageDataUrl;
+        if(photoRef.current != null){
+          photoRef.current.src = imageDataUrl;
+        }
   
         
       fetch('/uploadImage', {
@@ -99,7 +101,7 @@ const VideoStream = (props)=>{
               console.log("recieved fist")
               volumeDown()
               recentRef.current = (true)
-              props.setEmojiResponse("👊")
+              props.setEmojiResponse("👊-volume down")
               commandInterval()
               break
               
@@ -107,38 +109,43 @@ const VideoStream = (props)=>{
               console.log("recieved hand")
               volumeUp()
               recentRef.current = (true)
-              props.setEmojiResponse("✋")
+              props.setEmojiResponse("✋-volume up")
               commandInterval()
               break
               case("thumbs up"):
               console.log("recieved thumbs up")
               recentRef.current = (true)
-              props.setEmojiResponse("👍")
-              pauseMusic()
-              props.setDeviceState(a => {
-                if(a?.is_playing === true){
-                  
-                  a.is_playing = false
-                }
-                return a
-              })
+              props.setEmojiResponse("👍-pause")
+              nextSong()
               commandInterval()
               break
-              case("peace sign"):
+              case("peace"):
               console.log("recieved peace sign")
               //toggle
               
-              continueMusic()
-              props.setDeviceState(a => {
-                if(a?.is_playing === false){
-                  
-                  a.is_playing = true
-                }
-                return a
-              })
               recentRef.current = (true)
-              props.setEmojiResponse("✌️")
               commandInterval()
+              if(props.deviceState?.is_playing){
+                pauseMusic()
+                props.setEmojiResponse("✌️-toggle music->pause")
+                props.setDeviceState(a => {
+                  if(a?.is_playing === true){
+                    
+                    a.is_playing = false
+                  }
+                  return a
+                })
+              }else{
+                continueMusic()
+                props.setEmojiResponse("✌️-toggle music->continue")
+                props.setDeviceState(a => {
+                  if(a?.is_playing === false){
+                    
+                    a.is_playing = true
+                  }
+                  return a
+                })
+              }
               break
         default:
           console.log("recieved alternate ", sign)
@@ -164,8 +171,8 @@ const VideoStream = (props)=>{
         </div>
         </div>
         <video ref={videoRef}></video>
-        <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
-        <img style={{color:"gray"}}ref={photoRef} alt="No capture taken yet" />
+        <canvas ref={canvasRef} style={{ display: 'none' , }}></canvas>
+        {/* <img style={{color:"gray"}}ref={photoRef} alt="No capture taken yet" /> */}
     </>)
 }
 export default VideoStream

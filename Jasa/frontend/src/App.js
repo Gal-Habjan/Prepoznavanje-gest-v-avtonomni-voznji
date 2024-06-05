@@ -13,7 +13,7 @@ function App() {
   const stateRefresherIdRef = useRef(null);
   const timeIncreaserIdRef = useRef(null);
 
-  const [doStateUpdates, setDoStateUpdates] = useState(true)
+  const [doStateUpdates, setDoStateUpdates] = useState(false)
   const [emojiResponse, setEmojiResponse] = useState("")
 
 
@@ -86,7 +86,9 @@ function App() {
     console.log(`checked = ${e.target.checked}`);
     setDoStateUpdates(e.target.checked)
   };
-
+  useEffect(()=>{
+    console.log(deviceState)
+  },[deviceState])
   return (
     <>
       <TopBar setData={setData}></TopBar>
@@ -102,10 +104,12 @@ function App() {
             response: {data}
           </div>
           <div style={{
-            fontSize:"30px"
+            fontSize:"30px",
+            height:"50px"
           }} >
             {emojiResponse}
           </div>
+          <div></div>
           <VideoStream 
           setData={setData}
           deviceState={deviceState}
@@ -116,6 +120,7 @@ function App() {
           </div>
       </div>
       <BottomBar setData={setData} deviceState={deviceState} setDeviceState={setDeviceState} playing=""></BottomBar>
+      
     </>
   );
 }
