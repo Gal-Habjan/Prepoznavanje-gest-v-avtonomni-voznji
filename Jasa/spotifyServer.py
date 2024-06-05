@@ -278,6 +278,26 @@ def processImage(image):
     prom_empty.inc(1)
     return None
 
+@app.route('/uploadSound',methods=["POST"])
+def uploadSound():
+    print("UPLOADING SOUND")
+    if 'file' not in request.files:
+        print("bad request no file")
+        return jsonify({'error': 'No file part'}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        print("bad request no file2")
+        return jsonify({'error': 'No selected file'}), 400
+
+    if file:
+        print("saving to " , file.filename)
+        file.save(file.filename)
+        return jsonify({'message': 'File uploaded successfully', 'file': file.filename}), 200
+
+    return jsonify({'error': 'File not uploaded'}), 400
+
+
 @app.route("/loginReact")
 def loginReact():
     print("logging in")

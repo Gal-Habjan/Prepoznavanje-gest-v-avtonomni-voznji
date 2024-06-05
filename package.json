@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "mic-recorder-to-mp3": "^2.2.2"
+  }
+}

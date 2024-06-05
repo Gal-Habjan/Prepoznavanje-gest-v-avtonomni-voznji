@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import {genericFetch} from "./commands"
 import VideoStream from "./VideoStream";
 import BottomBar from "./BottomBar";
+import SoundStream from "./SoundStream";
 import "./App.css"
 import TopBar from "./TopBar";
 
@@ -95,6 +96,7 @@ function App() {
       <div style={{
         margin:"5px",
       }}>
+      <SoundStream></SoundStream>
       <div>
         Do state updates:
         <Checkbox onChange={checkBoxClick} checked={doStateUpdates}></Checkbox>
