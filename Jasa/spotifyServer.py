@@ -41,6 +41,7 @@ def add_security_headers(response):
     response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
     return response
 
+
 @app.route('/metrics')
 def metrics():
     print("getting metrics data")
@@ -58,9 +59,10 @@ token_url = 'https://accounts.spotify.com/api/token'
 base_url = 'https://api.spotify.com/v1/'
 
 scope = 'user-read-private user-read-email user-read-playback-state user-modify-playback-state'  # Add necessary scopes here
-@app.route("/index")
+@app.route("/")
 def index():
     print("getting index data")
+    return jsonify({"message":"wtf is going on"}), 500
 
 @app.route("/login")
 def login():
