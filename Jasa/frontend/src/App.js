@@ -96,7 +96,7 @@ function App() {
       <div style={{
         margin:"5px",
       }}>
-      <SoundStream></SoundStream>
+      <SoundStream deviceState={deviceState} setDeviceState={setDeviceState}></SoundStream>
       <div>
         Do state updates:
         <Checkbox onChange={checkBoxClick} checked={doStateUpdates}></Checkbox>

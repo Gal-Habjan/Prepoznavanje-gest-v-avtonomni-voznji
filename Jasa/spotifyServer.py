@@ -8,6 +8,10 @@ import time
 from spotifyServerHelper import genericSpotifyFetch, getPlaybackState
 from PIL import Image
 import logging
+import moviepy.editor as moviepy
+from pydub import AudioSegment
+import io
+from flask_cors import CORS
 
 #for the ai
 import numpy as np
@@ -27,8 +31,15 @@ prom_error = Counter('prom_error', 'Number of errors')
 
 
 app = Flask(__name__)
+CORS(app)
 path_to_best = "./Jasa/best.pt"
 model = None
+
+@app.after_request
+def add_security_headers(response):
+    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
+    response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
+    return response
 
 @app.route('/metrics')
 def metrics():
@@ -47,7 +58,7 @@ token_url = 'https://accounts.spotify.com/api/token'
 base_url = 'https://api.spotify.com/v1/'
 
 scope = 'user-read-private user-read-email user-read-playback-state user-modify-playback-state'  # Add necessary scopes here
-@app.route("/")
+@app.route("/index")
 def index():
     print("getting index data")
 
@@ -179,7 +190,7 @@ def getState():
     # print("getting state")
     playback = getPlaybackState()
     if(playback is None):
-        return
+        return jsonify({'error': 'spotify not online'}), 400
     # print(playback)
     # print("returning state")
     return playback
@@ -286,13 +297,15 @@ def uploadSound():
         return jsonify({'error': 'No file part'}), 400
 
     file = request.files['file']
+    
     if file.filename == '':
         print("bad request no file2")
         return jsonify({'error': 'No selected file'}), 400
 
     if file:
-        print("saving to " , file.filename)
+        print("saving gile as ", file.filename)
         file.save(file.filename)
+
         return jsonify({'message': 'File uploaded successfully', 'file': file.filename}), 200
 
     return jsonify({'error': 'File not uploaded'}), 400
