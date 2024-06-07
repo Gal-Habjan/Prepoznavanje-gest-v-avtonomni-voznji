@@ -68,7 +68,7 @@ def play_audio(file_path):
     play_obj = wave_obj.play()
     play_obj.wait_done()
 
-model = tf.keras.models.load_model('voice_command_model_with_droupout_HAO.h5')
+model = tf.keras.models.load_model('voice_command_model_v2.h5')
 # model = tf.keras.models.load_model('voice_command_model_v2.h5')
 # model = tf.keras.models.load_model('voice_command_model_v2_novo.h5') # u petek ta
 

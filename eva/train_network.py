@@ -45,7 +45,7 @@ def create_dataset(data_dir, output_file):
             labels.append(label)
     np.savez(output_file, features=np.array(features), labels=np.array(labels))
 
-data_dir = 'dataset'
+data_dir = 'databse'
 output_file = 'voice_commands_dataset.npz'
 create_dataset(data_dir, output_file)
 
@@ -120,7 +120,7 @@ model = models.Sequential([
 
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-history = model.fit(X_train, y_train, epochs=20, validation_data=(X_val, y_val))
+history = model.fit(X_train, y_train, epochs=50, validation_data=(X_val, y_val))
 # history = model.fit(X_train, y_train, epochs=30, validation_data=(X_val, y_val), callbacks=[
 #     tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
 # ])
