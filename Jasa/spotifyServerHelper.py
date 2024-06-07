@@ -30,7 +30,7 @@ def genericSpotifyFetch(spotifyApiUrl, method = "PUT",spotifyApiHeaders= None, s
             'Authorization': 'Bearer ' + token
         }
 
-    print("headers " , headers, " url, " , url, " token " , token,type(token),  "\n")
+    # print("headers " , headers, " url, " , url, " token " , token,type(token),  "\n")
     try:
         if(method == "PUT"):
             response = requests.put(url, headers=headers)
@@ -64,5 +64,9 @@ def getPlaybackState():
         print("ERROR no device connected")
     
 
-
-    return response.json()
+    # print("returning state response ", response.json())
+    try:
+        return response.json()
+    except:
+        print("cannot jsonify playback state response")
+        return None

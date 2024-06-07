@@ -8,6 +8,7 @@ from threading import Thread
 import time
 import shell_image
 import numpy as np
+from prometheus_client import start_http_server, Counter
 class Gestures(IntEnum):
     FIST = 0
     HAND = 1
@@ -46,7 +47,10 @@ class CameraApp:
         self.canvas = tk.Canvas(master, width=self.vid.get(cv2.CAP_PROP_FRAME_WIDTH),
                                 height=self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.canvas.pack()
-
+        self.turn_down_volume_counter = Counter('volume_down', 'volume down counter')
+        self.turn_up_volume_counter = Counter('volume_up', 'volume up counter')
+        self.toggle_pause_counter = Counter('toggle_pause', 'toggle pause counter')
+        self.next_song_counter = Counter('next_song', 'next song counter')
         self.gesture_label = tk.Label(master, text="Waiting..")
         self.gesture_label.pack(anchor=tk.CENTER, expand=True)
         self.vid = cv2.VideoCapture(0)
@@ -57,6 +61,7 @@ class CameraApp:
         button = tk.Button(master, text="Authenticate", command=self.open_url)
         button.pack(pady=20)
         self.spotify_thread = None
+        start_http_server(8000)
 
     def open_url(self):
         url = "http://127.0.0.1:5000"  # Replace this with your desired URL
@@ -71,7 +76,6 @@ class CameraApp:
         self.master.destroy()
 
     def snapshot(self):
-
         ret, frame = self.vid.read()
         if ret:
             rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -80,19 +84,25 @@ class CameraApp:
             return pil_image
 
     def call_spotify(self, gesture):
-        function = gestures_features_dict[gesture]
-        if function == Features.NEXT_SONG:
-            spotifyApp.call_next_song()
+        try:
+            function = gestures_features_dict[gesture]
+            if function == Features.NEXT_SONG:
+                self.next_song_counter.inc(1)
+                spotifyApp.call_next_song()
 
-        elif function == Features.TOGGLE_PAUSE:
+            elif function == Features.TOGGLE_PAUSE:
+                self.toggle_pause_counter.inc(1)
+                spotifyApp.call_toggle_pause()
 
-            spotifyApp.call_toggle_pause()
+            elif function == Features.TURN_UP_VOL:
+                self.turn_up_volume_counter.inc(1)
+                spotifyApp.call_volume_up()
 
-        elif function == Features.TURN_UP_VOL:
-            spotifyApp.call_volume_up()
-
-        elif function == Features.TURN_DOWN_VOL:
-            spotifyApp.call_volume_down()
+            elif function == Features.TURN_DOWN_VOL:
+                self.turn_down_volume_counter.inc(1)
+                spotifyApp.call_volume_down()
+        except Exception as e:
+            print("Exception while calling spotify", e)
         time.sleep(1)
 
     def draw_hull_on_image(self,original_image, hull, offset=(0, 0)):
@@ -122,12 +132,18 @@ class CameraApp:
                 # print(x_min, y_min, x_max, y_max, prob, clas)
                 # Draw bounding box
                 cropped_image = rgb_frame[y_min:y_max, x_min:x_max]
-                hull = shell_image.get_hull_from_image(cropped_image)
                 cv2.rectangle(rgb_frame, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)
-                offset = (x_min, y_min)
-                rgb_frame = self.draw_hull_on_image(rgb_frame, hull,offset)
+                try:
+                    hull = shell_image.get_hull_from_image(cropped_image)
+                    offset = (x_min, y_min)
+                    rgb_frame = self.draw_hull_on_image(rgb_frame, hull, offset)
+                except Exception as e:
+                    print("Exception while getting hull", e)
+
+
                 gesture = Gestures.NONE
                 if clas == Gestures.FIST.value:
+
                     gesture = Gestures.FIST
                 elif clas == Gestures.HAND.value:
                     gesture = Gestures.HAND
