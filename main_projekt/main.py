@@ -4,6 +4,7 @@ import UI
 import time
 from threading import Thread
 import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 import torchvision.transforms as transforms
 import spotifyApp
 
