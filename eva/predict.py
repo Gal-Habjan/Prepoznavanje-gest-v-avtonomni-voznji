@@ -7,11 +7,19 @@ import keyboard
 import pyaudio
 import wave
 import simpleaudio as sa
-
+import os
+'''
 def preprocess_audio(file_path, n_mels=128, n_fft=2048, hop_length=512):
     y, sr = librosa.load(file_path, sr=None)
     mel_spec = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=n_mels, n_fft=n_fft, hop_length=hop_length)
     mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
+    return mel_spec_db
+'''
+def preprocess_audio(file_path, n_mels=128, n_fft=2048, hop_length=512):
+    y, sr = librosa.load(file_path, sr=None)
+    mel_spec = librosa.feature.melspectrogram(y=y, sr=sr, n_mels=n_mels, n_fft=n_fft, hop_length=hop_length)
+    mel_spec_db = librosa.power_to_db(mel_spec, ref=np.max)
+    mel_spec_db = np.expand_dims(mel_spec_db, axis=-1)  # Add channel dimension
     return mel_spec_db
 
 def predict_command(file_path, model, commands):
@@ -22,7 +30,6 @@ def predict_command(file_path, model, commands):
     predicted_label = np.argmax(prediction)
     predicted_command = commands[predicted_label]
     return predicted_command, certainties
-
 
 def record_audio(output_file, duration=5):
     chunk = 1024
@@ -68,8 +75,8 @@ def play_audio(file_path):
     play_obj = wave_obj.play()
     play_obj.wait_done()
 
-model = tf.keras.models.load_model('voice_command_model_with_droupout_HAO.h5')
-# model = tf.keras.models.load_model('voice_command_model_v2.h5')
+#model = tf.keras.models.load_model('voice_command_model_with_droupout_HAO.h5')
+model = tf.keras.models.load_model('model.keras')
 # model = tf.keras.models.load_model('voice_command_model_v2_novo.h5') # u petek ta
 
 
@@ -82,16 +89,39 @@ def start_recording():
 
     while True:
         keyboard.wait('space')
-        record_audio(output_file, duration=2)
-        play_audio(output_file)
-        predicted_command = predict_command(output_file, model, commands)
-        print(f"Predicted Command: {predicted_command}")
+        print("Recording")
+        record_audio(output_file, duration=3)
+        print("Playing")
+        #play_audio(output_file)
+        print("predicting")
+        predicted_command,prob = predict_command(output_file, model, commands)
+        print(f"Predicted Command: {predicted_command} Probability: {prob}")
 
-start_recording()
+def predict_from_wav(file_path, model, commands):
+    '''
+    zeli met wav, list of commands in model\n
+    tu mas commands = ["next_song", "pause", "volume_down", "volume_up"]
+    '''
 
-
-#dober dan jasa tu je zeljena funkccija
-def predict_from_wav(file_path, model, commands): #zeli met wav, list of commands in model
-    # tu mas commands = ["next_song", "pause", "volume_down", "volume_up"]
     predicted_command, certainties = predict_command(file_path, model, commands)
     return predicted_command
+start_recording()
+# a= predict_command("recorded_audio.wav", model, commands)
+# corr = 0
+# wrong = 0
+# i = 0
+# for command in commands:
+#     command_dir = os.path.join("databse", command)
+#     for file_name in os.listdir(command_dir):
+#         if file_name.endswith('.wav'):  # Ensure only .wav files are processed
+#             if i %50==0:
+#                 print(i)
+#             i+=1
+#             file_path = os.path.join(command_dir, file_name)
+#             predicted_command,pred = predict_command(file_path, model, commands)
+#             if predicted_command == command:
+#                 corr += 1
+#             else:
+#                 wrong += 1
+# print(corr,wrong)
+#dober dan jasa tu je zeljena funkccija
