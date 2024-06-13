@@ -7,6 +7,11 @@ import re
 import time
 from spotifyServerHelper import genericSpotifyFetch, getPlaybackState
 from PIL import Image
+import logging
+import moviepy.editor as moviepy
+from pydub import AudioSegment
+import io
+from flask_cors import CORS
 
 #for the ai
 import numpy as np
@@ -15,7 +20,7 @@ from shell_image import edge_detection
 import torchvision.transforms as transforms
 from ultralytics import YOLO
 
-from prometheus_client import start_http_server, Counter
+from prometheus_client import Counter, generate_latest, REGISTRY, start_http_server
 
 prom_fist = Counter('prom_fist', 'Number of fists detected')
 prom_peace = Counter('prom_peace', 'Number of peace signs detected')
@@ -25,11 +30,22 @@ prom_empty = Counter('prom_empty', 'Number of images without gestures')
 prom_error = Counter('prom_error', 'Number of errors')
 
 
-
 app = Flask(__name__)
+CORS(app)
 path_to_best = "./Jasa/best.pt"
 model = None
-start_http_server(8000) 
+
+@app.after_request
+def add_security_headers(response):
+    response.headers['Cross-Origin-Opener-Policy'] = 'same-origin'
+    response.headers['Cross-Origin-Embedder-Policy'] = 'require-corp'
+    return response
+
+
+@app.route('/metrics')
+def metrics():
+    print("getting metrics data")
+    return generate_latest(REGISTRY), 200
 
 if not app.secret_key:
     app.secret_key = os.urandom(24)
@@ -45,18 +61,8 @@ base_url = 'https://api.spotify.com/v1/'
 scope = 'user-read-private user-read-email user-read-playback-state user-modify-playback-state'  # Add necessary scopes here
 @app.route("/")
 def index():
-    #unused
-    print("got a call")
-    # if "accessToken" not in session:
-    #     return(redirect("/login"))
-    return ("<div> <a href='/login'>login</a> </div>"
-            "<div><a href='/continuePlaying'>continue</a></div>"
-            "<div><a href='/pause'>pause</a></div>"
-            "<div><a href='/nextSong'>next song</a></div>"
-            "<div><a href='/previousSong'>previous song</a></div>"
-            "<div><a href='/volumeUp'>volume up</a></div>"
-            "<div><a href='/volumeDown'>volume down</a></div>"
-            )
+    print("getting index data")
+    return jsonify({"message":"wtf is going on"}), 500
 
 @app.route("/login")
 def login():
@@ -140,12 +146,16 @@ def volumeUp():
     print("volume up")
     playback = getPlaybackState()
     if(playback is None):
-        return
+        return Response('{"message":"cannot access device"}', status=403, mimetype='application/json') 
     volumePercent = -1
     # print(playback)
     volumeData = playback
     # print(volumeData)
-    volumePercent = volumeData["device"]["volume_percent"]
+    try:
+        volumePercent = volumeData["device"]["volume_percent"]
+    except:
+        print("cannot parse volume data " , volumeData)
+        exit(0)
     print("got volume :",volumePercent)
 
 
@@ -162,7 +172,7 @@ def volumeDown():
 
     playback = getPlaybackState()
     if(playback is None):
-        return
+        return Response('{"message":"cannot access device"}', status=403, mimetype='application/json') 
     volumePercent = -1
     # print(playback)
     volumeData = playback
@@ -182,7 +192,7 @@ def getState():
     # print("getting state")
     playback = getPlaybackState()
     if(playback is None):
-        return
+        return jsonify({'error': 'spotify not online'}), 400
     # print(playback)
     # print("returning state")
     return playback
@@ -199,6 +209,7 @@ def upload_image():
         image_data = base64.b64decode(base64_str)
         imageArray = np.frombuffer(image_data, dtype=np.uint8)
         image = cv2.imdecode(imageArray, cv2.IMREAD_COLOR)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         try:
             sign = processImage(image)
         except Exception as err:
@@ -214,9 +225,14 @@ def upload_image():
         prom_error.inc(1)
         return Response('{"message": "Failed to upload image"}', status=400, mimetype='application/json')
     
-
+# imageCounter = 0
 def processImage(image):
+    # global imageCounter
+    # imageCounter += 1
+
     image = Image.fromarray(image)
+    # filename = 'input' + str(imageCounter) + '.jpg'
+    # image.save("aaaa.jpg")
     # print("shape",image.shape)
 
     # print("tensoreding the image", image.shape, " " , type(image))
@@ -238,7 +254,8 @@ def processImage(image):
     probs = []
 
     for result in results:
-        # result.save(filename='result1.jpg')#todo why does this save to result.jpg, even when the name is different
+        # filename = 'result' + str(imageCounter) + '.jpg'
+        # result.save(filename)
         boxes = result.boxes  # Boxes object for bounding box outputs
         # print("getting result" , result.names)
         # print("got boxes" , result[0])
@@ -252,6 +269,7 @@ def processImage(image):
             print("val \033[94m" + val + '\033[0m')
             match val:
                 case "fist":
+                    logging.debug("prom_fist: %s", prom_fist)
                     prom_fist.inc(1)
                     print("increasing fist counter", prom_fist)
                 case "hand":
@@ -272,6 +290,28 @@ def processImage(image):
 
     prom_empty.inc(1)
     return None
+
+@app.route('/uploadSound',methods=["POST"])
+def uploadSound():
+    print("UPLOADING SOUND")
+    if 'file' not in request.files:
+        print("bad request no file")
+        return jsonify({'error': 'No file part'}), 400
+
+    file = request.files['file']
+    
+    if file.filename == '':
+        print("bad request no file2")
+        return jsonify({'error': 'No selected file'}), 400
+
+    if file:
+        print("saving gile as ", file.filename)
+        file.save(file.filename)
+
+        return jsonify({'message': 'File uploaded successfully', 'file': file.filename}), 200
+
+    return jsonify({'error': 'File not uploaded'}), 400
+
 
 @app.route("/loginReact")
 def loginReact():

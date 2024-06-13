@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import {genericFetch} from "./commands"
 import VideoStream from "./VideoStream";
 import BottomBar from "./BottomBar";
+import SoundStream from "./SoundStream";
 import "./App.css"
 import TopBar from "./TopBar";
 
@@ -13,7 +14,7 @@ function App() {
   const stateRefresherIdRef = useRef(null);
   const timeIncreaserIdRef = useRef(null);
 
-  const [doStateUpdates, setDoStateUpdates] = useState(true)
+  const [doStateUpdates, setDoStateUpdates] = useState(false)
   const [emojiResponse, setEmojiResponse] = useState("")
 
 
@@ -86,13 +87,16 @@ function App() {
     console.log(`checked = ${e.target.checked}`);
     setDoStateUpdates(e.target.checked)
   };
-
+  useEffect(()=>{
+    console.log(deviceState)
+  },[deviceState])
   return (
     <>
       <TopBar setData={setData}></TopBar>
       <div style={{
         margin:"5px",
       }}>
+      <SoundStream deviceState={deviceState} setDeviceState={setDeviceState}></SoundStream>
       <div>
         Do state updates:
         <Checkbox onChange={checkBoxClick} checked={doStateUpdates}></Checkbox>
@@ -102,10 +106,12 @@ function App() {
             response: {data}
           </div>
           <div style={{
-            fontSize:"30px"
+            fontSize:"30px",
+            height:"50px"
           }} >
             {emojiResponse}
           </div>
+          <div></div>
           <VideoStream 
           setData={setData}
           deviceState={deviceState}
@@ -116,6 +122,7 @@ function App() {
           </div>
       </div>
       <BottomBar setData={setData} deviceState={deviceState} setDeviceState={setDeviceState} playing=""></BottomBar>
+      
     </>
   );
 }
