@@ -56,8 +56,9 @@ if __name__ == '__main__':
 
     print("model loaded")
 
-    ui_thread = Thread(target=run_UI_tread, args=())
-
-    ui_thread.start()
+    # ui_thread = Thread(target=run_UI_tread, args=())
+    #
+    # ui_thread.start()
+    run_UI_tread()
 
 
