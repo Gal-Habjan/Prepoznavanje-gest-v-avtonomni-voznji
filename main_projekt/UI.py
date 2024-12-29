@@ -1,5 +1,6 @@
 import tkinter as tk
 import cv2
+import requests
 from PIL import Image, ImageTk
 from enum import IntEnum
 import spotifyApp
@@ -13,6 +14,8 @@ from datetime import datetime
 import paho.mqtt.client as mqtt
 from prometheus_client import start_http_server, Counter
 import voice_recognition as voice
+
+
 
 
 class Gestures(IntEnum):
@@ -49,7 +52,7 @@ class CameraApp:
         self.is_running = True
         self.video_source = 0
         self.vid = cv2.VideoCapture(self.video_source)
-
+        self.camera_url = "http://esp32.local/capture?"
 
         self.canvas = tk.Canvas(master, width=self.vid.get(cv2.CAP_PROP_FRAME_WIDTH),
                                 height=self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -71,10 +74,12 @@ class CameraApp:
         # self.mqtt_client.on_connect = self.on_connect
         # start_http_server(8000)
         self.vid = cv2.VideoCapture(0)
+        self.rgb_frame = None
         self.snapshot_queue = []
         self.current_box = None
         self.current_prob = None
         self.lock = threading.Lock()
+        self.fetch_image()
         self.update()
 
         button = tk.Button(master, text="Authenticate", command=self.open_url)
@@ -87,6 +92,7 @@ class CameraApp:
         self.voice_thread = None
 
         # self.wait_for_sound()
+        self.sent_gesture = None
 
     def on_connect(self, client, userdata, flags, reasonCode, properties=None):
         print("Povezava z GESTA MQTT: " + str(reasonCode))
@@ -109,17 +115,40 @@ class CameraApp:
         self.master.destroy()
 
     def snapshot(self):
-        ret, frame = self.vid.read()
-        if ret:
-            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            pil_image = Image.fromarray(rgb_frame)
+        # ret, frame = self.vid.read()
+        # if ret:
+        #     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        #     pil_image = Image.fromarray(rgb_frame)
+        #     # Save the image using PIL
+        #     return pil_image
+        if self.rgb_frame is not None:
+            pil_image = Image.fromarray(self.rgb_frame)
+
             # Save the image using PIL
             return pil_image
+
+    def fetch_image(self):
+        """Fetch image from the camera in a separate thread"""
+
+        def fetch():
+            try:
+                response = requests.get(self.camera_url, timeout=1)
+                if response.status_code == 200:
+                    img_array = np.array(bytearray(response.content), dtype=np.uint8)
+                    frame = cv2.imdecode(img_array, -1)
+                    self.rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            except requests.exceptions.RequestException as e:
+                print(f"Request failed: {e}")
+            # Start fetching again as soon as the previous one finishes
+            self.fetch_image()
+
+        # Run the fetch in a separate thread
+        threading.Thread(target=fetch, daemon=True).start()
 
     def call_spotify(self, gesture, function=None):
 
         try:
-            # message = "sending gesture" + gesture.name+ " " + datetime.now().strftime("%H:%M:%S")
+            # message = "sending sent_gesture" + sent_gesture.name+ " " + datetime.now().strftime("%H:%M:%S")
             # ret = self.mqtt_client.publish(self.topic, message, qos=1, retain=False)
             # self.send_requests.inc(1)
             # print("Pošiljanje: " + message + " " + str(ret.rc))
@@ -189,54 +218,66 @@ class CameraApp:
         return original_image
 
     def update(self):
-        ret, frame = self.vid.read()
-        if ret:
-            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            if self.current_box is not None and len(self.current_box.data) > 0:
-                # print(self.current_box.data)
-                # Extract box coordinates
-                x_min, y_min, x_max, y_max, prob, clas = self.current_box.data[0]
+        # ret, frame = self.vid.read()
+        try:
 
-                x_min, y_min, x_max, y_max, prob, clas = int(x_min.item()), int(y_min.item()), int(x_max.item()), int(
-                    y_max.item()), prob.item(), int(clas.item())
-                # print(x_min, y_min, x_max, y_max, prob, clas)
-                # Draw bounding box
-                cropped_image = rgb_frame[y_min:y_max, x_min:x_max]
-                cv2.rectangle(rgb_frame, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)
-                try:
-                    hull = shell_image.get_hull_from_image(cropped_image)
-                    offset = (x_min, y_min)
-                    rgb_frame = self.draw_hull_on_image(rgb_frame, hull, offset)
-                except Exception as e:
-                    print("Exception while getting hull", e)
+            if self.rgb_frame is not None :
 
-                gesture = Gestures.NONE
-                if clas == Gestures.FIST.value:
+                # self.rgb_frame = frame
+                self.sent_gesture = Gestures.NONE.value
+                copyOfFrame = self.rgb_frame.copy()
+                if self.current_box is not None and len(self.current_box.data) > 0:
+                    # print(self.current_box.data)
+                    # Extract box coordinates
+                    x_min, y_min, x_max, y_max, prob, clas = self.current_box.data[0]
 
-                    gesture = Gestures.FIST
-                elif clas == Gestures.HAND.value:
-                    gesture = Gestures.HAND
-                elif clas == Gestures.PEACE.value:
-                    gesture = Gestures.PEACE
+                    x_min, y_min, x_max, y_max, prob, clas = int(x_min.item()), int(y_min.item()), int(
+                        x_max.item()), int(
+                        y_max.item()), prob.item(), int(clas.item())
+                    # print(x_min, y_min, x_max, y_max, prob, clas)
+                    # Draw bounding box
+                    cropped_image = copyOfFrame[y_min:y_max, x_min:x_max]
+                    cv2.rectangle(copyOfFrame, (x_min, y_min), (x_max, y_max), (255, 0, 0), 2)
+                    try:
+                        hull = shell_image.get_hull_from_image(cropped_image)
+                        offset = (x_min, y_min)
+                        copyOfFrame = self.draw_hull_on_image(copyOfFrame, hull, offset)
+                    except Exception as e:
+                        print("Exception while getting hull", e)
 
-                elif clas == Gestures.THUMBS_UP.value:
-                    gesture = Gestures.THUMBS_UP
-
-                elif clas == Gestures.NONE.value:
                     gesture = Gestures.NONE
-                if self.spotify_thread is None or not self.spotify_thread.is_alive():
-                    self.spotify_thread = Thread(target=self.call_spotify, args=(gesture,))
-                    self.spotify_thread.start()
-                # self.call_spotify(gesture)
-                # Add label and probability
-                label = f"{gesture.name}, Probability: {prob:.2f}"  # Adjust as needed
-                cv2.putText(rgb_frame, label, (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
-                self.gesture_label.config(text=gestures_features_dict[gesture].name)
-            else:
-                self.gesture_label.config(text="Waiting..")
-            self.photo = ImageTk.PhotoImage(image=Image.fromarray(rgb_frame))
-            self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
+                    if clas == Gestures.FIST.value:
 
+                        gesture = Gestures.FIST
+                    elif clas == Gestures.HAND.value:
+                        gesture = Gestures.HAND
+                    elif clas == Gestures.PEACE.value:
+                        gesture = Gestures.PEACE
+
+                    elif clas == Gestures.THUMBS_UP.value:
+                        gesture = Gestures.THUMBS_UP
+
+                    elif clas == Gestures.NONE.value:
+                        gesture = Gestures.NONE
+                    self.sent_gesture = clas
+                    if self.spotify_thread is None or not self.spotify_thread.is_alive():
+                        self.spotify_thread = Thread(target=self.call_spotify, args=(gesture,))
+                        self.spotify_thread.start()
+                    # self.call_spotify(sent_gesture)
+                    # Add label and probability
+                    label = f"{gesture.name}, Probability: {prob:.2f}"  # Adjust as needed
+                    cv2.putText(copyOfFrame, label, (x_min, y_min - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0),
+                                2)
+                    self.gesture_label.config(text=gestures_features_dict[gesture].name)
+                else:
+                    self.gesture_label.config(text="Waiting..")
+                self.photo = ImageTk.PhotoImage(image=Image.fromarray(copyOfFrame))
+                self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
+
+
+        except Exception as e:
+
+            print(f"An error occurred: {e}")
         self.master.after(10, self.update)
 
     def __del__(self):
