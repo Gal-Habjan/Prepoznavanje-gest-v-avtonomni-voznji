@@ -1,0 +1,52 @@
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; 
+    height: 100%; 
+  }
+
+
+.header-container {
+    display: flex;    
+    align-items: center; 
+    height: 50px;
+}
+
+h1 {
+    margin-right: 30px;     
+    font-family: Arial, sans-serif;
+    color: navy;
+    margin-left: 20px;
+}
+
+#gesta  {
+    font-weight: bold;  
+    font-family: Arial, sans-serif;
+    color: navy;
+    padding-left: 150px;
+    font-size: 25px;
+}
+
+#animationName {
+    font-size: 20px;
+    color: rgb(0, 119, 223);
+    padding-left: 10px;
+    font-family: Arial, sans-serif;
+    font-weight: bold;  
+
+}
+button {
+    padding: 5px 15px;      
+    font-size: 1.2rem;        
+    background-color: navy;  
+    color: white;    
+    border: none;        
+    border-radius: 5px;    
+    cursor: pointer;     
+    transition: background-color 0.4s ease; 
+}
+
+button:hover {
+    background-color: #4283c9; 
+}
