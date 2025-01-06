@@ -1,8 +1,9 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { FBXLoader } from "three/addons/loaders/FBXLoader.js"; // Use FBXLoader instead of OBJLoader
+
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"; // Use GLTFLoader
 
+import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -51,35 +52,33 @@ const material = new THREE.ShaderMaterial({
 });
 
 const controls = new OrbitControls(camera, renderer.domElement);
-const loader = new FBXLoader(); // Use FBXLoader to load FBX models
 const loader_gltf = new GLTFLoader();
+const loader = new FBXLoader();
 const textureLoader = new THREE.TextureLoader();
-const texture = textureLoader.load("./bake-2.png"); // Replace with your texture path
+const texture = textureLoader.load("./bake-2.png");
 let mixer;
 let animations = [];
 loader.load(
-    "./hand.fbx", // Path to your FBX file
+    "./hand.fbx",
     (object) => {
         object.traverse((child) => {
             if (child.isMesh) {
-                child.material = new THREE.MeshBasicMaterial({ map: texture }); // Apply texture
+                child.material = new THREE.MeshBasicMaterial({ map: texture });
             }
         });
-        object.position.set(0, -10, 20); // Adjust position if needed
+        object.position.set(0, -10, 20); 
         object.scale.set(0.03, 0.03, 0.03);
         object.rotation.y = 90;
         scene.add(object);
         mixer = new THREE.AnimationMixer(object);
 
-        // Store animations and set up the activeState animation
         console.log(object.animations);
         object.animations.forEach((clip) => {
             animations.push(clip);
             if (clip.name === "Armature|activeState") {
-                // Set the animation for "activeState" if it exists
                 const action = mixer.clipAction(clip);
-                action.setLoop(THREE.LoopOnce, 1); // Play once
-                action.clampWhenFinished = true; // Stay at the last frame
+                action.setLoop(THREE.LoopOnce, 1);
+                action.clampWhenFinished = true;
                 action.play();
             }
         });
@@ -181,7 +180,7 @@ socket.onclose = (event) => {
 
 function animate() {
     if (mixer) {
-        mixer.update(0.01); // Update the mixer with deltaTime
+        mixer.update(0.01);
     }
     renderer.render(scene, camera);
     updateAnimationName();
