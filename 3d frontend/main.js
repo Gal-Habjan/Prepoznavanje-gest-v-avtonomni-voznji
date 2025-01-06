@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"; // Use GLTFLoader
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"; 
 
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 
@@ -44,7 +44,7 @@ const fragmentShader = `
     }
 `;
 
-const geometry = new THREE.SphereGeometry(500, 32, 32); // Sphere to simulate sky
+const geometry = new THREE.SphereGeometry(500, 32, 32); 
 const material = new THREE.ShaderMaterial({
     vertexShader: vertexShader,
     fragmentShader: fragmentShader,
@@ -98,7 +98,7 @@ scene.add(sky);
 
 
 loader_gltf.load(
-    './vent.glb', // Path to your GLB file
+    './vent.glb',
     (gltf) => {
       const car = gltf.scene;
       scene.add(car);
@@ -124,7 +124,7 @@ loader_gltf.load(
   );
 
   loader_gltf.load(
-    './car.glb', // Path to your GLB file
+    './car.glb',
     (gltf) => {
       const car = gltf.scene;
       scene.add(car);
@@ -149,14 +149,6 @@ loader_gltf.load(
     }
   );
 
-  //scene.background = new THREE.Color(0x87CEEB); // Light blue color
-
-/*
-  const geometry = new THREE.BoxGeometry(5,5,5);
-  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-  const cube = new THREE.Mesh(geometry, material);
-  cube.position.set(5,5,-15);
-  scene.add(cube);*/
 
 camera.position.z = 30;
 const socket = new WebSocket("ws://localhost:8765");
