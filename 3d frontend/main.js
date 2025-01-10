@@ -91,16 +91,16 @@ loader.load(
         console.error("An error occurred while loading the FBX file:", error);
     }
 );
-const cameraTexture = textureLoader.load("./esp32camBake.PNG");
+const cameraTexture = textureLoader.load("./esp32camBake2.PNG");
 loader.load(
-  "./camera.fbx", // Path to your FBX file
+  "./ReworkedAiCam.fbx", // Path to your FBX file
   (object) => {
       object.traverse((child) => {
           if (child.isMesh) {
               child.material = new THREE.MeshBasicMaterial({ map: cameraTexture }); // Apply texture
           }
       });
-      object.position.set(3, -4, 2); // Adjust position if needed
+      object.position.set(3, -4.5, 2); // Adjust position if needed
       object.scale.set(0.01, 0.01, 0.01);
       object.rotation.set(Math.PI/2,0,0);
       scene.add(object);
