@@ -93,7 +93,7 @@ loader.load(
 );
 const cameraTexture = textureLoader.load("./esp32camBake2.PNG");
 loader.load(
-  "./ReworkedAiCam2.fbx", // Path to your FBX file
+  "./ReworkedAiCam3.fbx", // Path to your FBX file
   (object) => {
       object.traverse((child) => {
           if (child.isMesh) {
