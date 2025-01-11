@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"; 
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 
@@ -15,15 +15,38 @@ const camera = new THREE.PerspectiveCamera(
 );
 
 const renderer = new THREE.WebGLRenderer();
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 const ambientLight = new THREE.AmbientLight(0x404040, 2); // ambient luc
 scene.add(ambientLight);
 
+
+
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // bela direction
-directionalLight.position.set(5, 5, 5); 
+var cube2 = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 1, 1),
+    new THREE.MeshLambertMaterial({ color: 0xffaaaa })
+);
+
+cube2.position.set(10,10,10)
+directionalLight.position.set(10,10,10);
+directionalLight.castShadow = true;
+directionalLight.shadow.camera.near = 0.1;
+directionalLight.shadow.camera.far = 1000;
+directionalLight.shadow.mapSize.width = 512;
+directionalLight.shadow.mapSize.height = 512;
 scene.add(directionalLight);
+scene.add(cube2);
+
+
+
+
+
+
+
 
 const vertexShader = `
     varying vec3 vWorldPosition;
@@ -45,11 +68,11 @@ const fragmentShader = `
     }
 `;
 
-const geometry = new THREE.SphereGeometry(500, 32, 32); 
+const geometry = new THREE.SphereGeometry(500, 32, 32);
 const material = new THREE.ShaderMaterial({
     vertexShader: vertexShader,
     fragmentShader: fragmentShader,
-    side: THREE.BackSide 
+    side: THREE.BackSide
 });
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -65,9 +88,11 @@ loader.load(
         object.traverse((child) => {
             if (child.isMesh) {
                 child.material = new THREE.MeshBasicMaterial({ map: texture });
+                child.receiveShadow = true;
+                child.castShadow = true;
             }
         });
-        object.position.set(0, -10, 20); 
+        object.position.set(0, -10, 20);
         object.scale.set(0.03, 0.03, 0.03);
         object.rotation.y = 90;
         scene.add(object);
@@ -91,35 +116,37 @@ loader.load(
         console.error("An error occurred while loading the FBX file:", error);
     }
 );
-const cameraTexture = textureLoader.load("./esp32camBake2.PNG");
+const cameraTexture = textureLoader.load("./esp32camBake.PNG");
 loader.load(
-  "./ReworkedAiCam3.fbx", // Path to your FBX file
-  (object) => {
-      object.traverse((child) => {
-          if (child.isMesh) {
-              child.material = new THREE.MeshBasicMaterial({ map: cameraTexture }); // Apply texture
-          }
-      });
-      object.position.set(3, -4.5, 2); // Adjust position if needed
-      object.scale.set(0.01, 0.01, 0.01);
-      object.rotation.set(Math.PI/2,0,0);
-      scene.add(object);
+    "./ReworkedAiCam3.fbx", // Path to your FBX file
+    (object) => {
+        object.traverse((child) => {
+            if (child.isMesh) {
+                child.material = new THREE.MeshBasicMaterial({ map: cameraTexture }); // Apply texture
+                child.receiveShadow = true;
+                child.castShadow = true;
+            }
+        });
+        object.position.set(3, -4.5, 2); // Adjust position if needed
+        object.scale.set(0.01, 0.01, 0.01);
+        object.rotation.set(Math.PI / 2, 0, 0);
+        scene.add(object);
 
 
 
-  },
-  (xhr) => {
-      console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
-  },
-  (error) => {
-      console.error("An error occurred while loading the FBX file:", error);
-  }
+    },
+    (xhr) => {
+
+    },
+    (error) => {
+        console.error("An error occurred while loading the FBX file:", error);
+    }
 );
 
 
 
 
- 
+
 camera.position.z = 5;
 
 
@@ -130,54 +157,58 @@ scene.add(sky);
 loader_gltf.load(
     './vent.glb',
     (gltf) => {
-      const car = gltf.scene;
-      scene.add(car);
-  
-      car.traverse((child) => {
-        if (child.isMesh) {
-          if (child.name.toLowerCase().includes('vent')) {
-            child.material = new THREE.MeshStandardMaterial({ color: 0xff0000 }); // Red color
-        }
-        }
-      });
-  
-      car.position.set(7, -5, 1);
-      car.scale.set(2.7, 2.7, 2.7);
-      car.rotation.y = 0.15;
+        const car = gltf.scene;
+        scene.add(car);
+
+        car.traverse((child) => {
+            if (child.isMesh) {
+                child.receiveShadow = true;
+                child.castShadow = true;
+                if (child.name.toLowerCase().includes('vent')) {
+                    child.material = new THREE.MeshStandardMaterial({ color: 0xff0000 }); // Red color
+                }
+            }
+        });
+
+        car.position.set(7, -5, 1);
+        car.scale.set(2.7, 2.7, 2.7);
+        car.rotation.y = 0.15;
     },
     (xhr) => {
-      console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
+        console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
     },
     (error) => {
-      console.error('An error occurred while loading the GLTF file:', error);
+        console.error('An error occurred while loading the GLTF file:', error);
     }
-  );
+);
 
-  loader_gltf.load(
+loader_gltf.load(
     './car.glb',
     (gltf) => {
-      const car = gltf.scene;
-      scene.add(car);
-  
-      car.traverse((child) => {
-        if (child.isMesh) {
-          if (child.name.toLowerCase().includes('vent')) {
-            child.material = new THREE.MeshStandardMaterial({ color: 0xff0000 }); // Red color
-        }
-        }
-      });
-  
-      car.position.set(5, -60, 10);
-      car.scale.set(40,40,40);
-      car.rotation.y = 30;
+        const car = gltf.scene;
+        scene.add(car);
+
+        car.traverse((child) => {
+            if (child.isMesh) {
+                child.receiveShadow = true;
+                child.castShadow = true;
+                if (child.name.toLowerCase().includes('vent')) {
+                    child.material = new THREE.MeshStandardMaterial({ color: 0xff0000 }); // Red color
+                }
+            }
+        });
+
+        car.position.set(5, -60, 10);
+        car.scale.set(40, 40, 40);
+        car.rotation.y = 30;
     },
     (xhr) => {
-      console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
+        console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
     },
     (error) => {
-      console.error('An error occurred while loading the GLTF file:', error);
+        console.error('An error occurred while loading the GLTF file:', error);
     }
-  );
+);
 
 
 camera.position.z = 30;
@@ -207,7 +238,7 @@ function animate() {
     renderer.render(scene, camera);
     updateAnimationName();
     try {
-    } catch {}
+    } catch { }
 }
 
 const animationNameElement = document.getElementById('animationName');
@@ -232,9 +263,9 @@ function updateAnimationName() {
 //demo animacije
 document.getElementById('animateButton').addEventListener('click', () => {
     if (mixer) {
-        const action = mixer.clipAction(animations[0]); 
+        const action = mixer.clipAction(animations[0]);
         action.reset().play();
-        
+
     }
 });
 
