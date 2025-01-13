@@ -73,10 +73,8 @@ void LEDTask(void *pvParameters);
 TaskHandle_t TaskHandle_LEDTask;
 TaskHandle_t TaskHandle_USBTask;
 
-
 //max 5 items, each one byte, 0->no command, 1-4 ->different gestures
 QueueHandle_t usbQueue;
-
 
 /* USER CODE END PFP */
 
@@ -87,15 +85,13 @@ void LEDTask(void *pvParameters) {
 	for (;;) {
 		xQueueReceive(usbQueue, &recievedCommand, pdMS_TO_TICKS(100));
 
-		if(recievedCommand > 0){
+		if (recievedCommand > 0) {
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
 
-		}else{
-		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+		} else {
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
 
 		}
-
-
 
 	}
 }
@@ -103,24 +99,38 @@ void USBTask(void *pvParameters) {
 	int command = 0;
 	for (;;) {
 		command++;
-		if(command > 1)command = 0;
-		xQueueSend(usbQueue,&command,pdMS_TO_TICKS(100));
+		if (command > 1)
+			command = 0;
+		xQueueSend(usbQueue, &command, pdMS_TO_TICKS(100));
 		//get data from usb and parse
 		HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
 		vTaskDelay(pdMS_TO_TICKS(1000));
 	}
 }
 void DC_MotorTask(void *pvParameters) {
+	int recievedCommand = 0;
 	for (;;) {
-		//get data from usb and parse
-		HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
+		if (xQueueReceive(usbQueue, &recievedCommand,
+				pdMS_TO_TICKS(100)) == pdPASS) { // i guess da je motor 2 pa 3?
+			if (recievedCommand == 2) {  //volume up
+				HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
+			}
+			if (recievedCommand == 3) {  // volume down
+				HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
+			}
+		}
 		vTaskDelay(pdMS_TO_TICKS(500));
 	}
 }
 void beeperTask(void *pvParameters) {
+	int recievedCommand = 0;
 	for (;;) {
-		//get data from usb and parse
-		HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_15);
+		if (xQueueReceive(usbQueue, &recievedCommand,
+				pdMS_TO_TICKS(100)) == pdPASS) {
+			if (recievedCommand == 4) {  // za beeper bo 4?
+				HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_15);
+			}
+		}
 		vTaskDelay(pdMS_TO_TICKS(500));
 	}
 }
@@ -135,7 +145,7 @@ int main(void) {
 
 	/* USER CODE BEGIN 1 */
 	// Create a queue with 5 items, each of 1 byte (uint8_t) in size
-	usbQueue = xQueueCreate( 5, sizeof(uint8_t));
+	usbQueue = xQueueCreate(5, sizeof(uint8_t));
 	/* USER CODE END 1 */
 
 	/* MCU Configuration--------------------------------------------------------*/
@@ -196,7 +206,6 @@ int main(void) {
 	/* USER CODE END RTOS_THREADS */
 
 	/* USER CODE BEGIN RTOS_EVENTS */
-
 
 	/* add events, ... */
 	xTaskCreate(LEDTask, "LED Task", 128, NULL, 2, &TaskHandle_LEDTask);
@@ -440,8 +449,7 @@ static void MX_GPIO_Init(void) {
 
 	/*Configure GPIO pin Output Level */
 	HAL_GPIO_WritePin(GPIOD,
-			LD4_Pin | LD3_Pin | LD5_Pin | LD6_Pin | Audio_RST_Pin,
-			GPIO_PIN_RESET);
+	LD4_Pin | LD3_Pin | LD5_Pin | LD6_Pin | Audio_RST_Pin, GPIO_PIN_RESET);
 
 	/*Configure GPIO pin : DATA_Ready_Pin */
 	GPIO_InitStruct.Pin = DATA_Ready_Pin;
