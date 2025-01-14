@@ -70,69 +70,80 @@ void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
 void LEDTask(void *pvParameters);
+void DC_MotorTask(void *pvParameters);
+void beeperTask(void *pvParameters);
+
 TaskHandle_t TaskHandle_LEDTask;
 TaskHandle_t TaskHandle_USBTask;
+TaskHandle_t TaskHandle_DC_MotorTask;
+TaskHandle_t TaskHandle_beeperTask;
 
 //max 5 items, each one byte, 0->no command, 1-4 ->different gestures
 QueueHandle_t usbQueue;
+QueueHandle_t ledQueue, motorQueue, beeperQueue;
+
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void LEDTask(void *pvParameters) {
-	int recievedCommand = 0;
-	for (;;) {
-		xQueueReceive(usbQueue, &recievedCommand, pdMS_TO_TICKS(100));
+void LEDTask(void *pvParameters) {  // green LED
+    int recievedCommand = 0;
+    for (;;) {
+        xQueueReceive(ledQueue, &recievedCommand, pdMS_TO_TICKS(100));
 
-		if (recievedCommand > 0) {
-			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+        if (recievedCommand == 1) {
+            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+        } else {
+            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+        }
 
-		} else {
-			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
-
-		}
-
-	}
+    }
 }
+
+void DC_MotorTask(void *pvParameters) {  // red LED
+    int recievedCommand = 0;
+    for (;;) {
+        xQueueReceive(motorQueue, &recievedCommand, pdMS_TO_TICKS(100));
+
+        if (recievedCommand == 2 || recievedCommand == 3) {
+            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+        } else {
+            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
+        }
+
+    }
+}
+
+void beeperTask(void *pvParameters) {  // blue LED
+    int recievedCommand = 0;
+    for (;;) {
+        xQueueReceive(beeperQueue, &recievedCommand, pdMS_TO_TICKS(100));
+
+        if (recievedCommand == 4) {
+            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
+        } else {
+            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
+        }
+
+    }
+}
+
 void USBTask(void *pvParameters) {
-	int command = 0;
-	for (;;) {
-		command++;
-		if (command > 1)
-			command = 0;
-		xQueueSend(usbQueue, &command, pdMS_TO_TICKS(100));
-		//get data from usb and parse
-		HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
-		vTaskDelay(pdMS_TO_TICKS(1000));
-	}
-}
-void DC_MotorTask(void *pvParameters) {
-	int recievedCommand = 0;
-	for (;;) {
-		if (xQueueReceive(usbQueue, &recievedCommand,
-				pdMS_TO_TICKS(100)) == pdPASS) { // i guess da je motor 2 pa 3?
-			if (recievedCommand == 2) {  //volume up
-				HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
-			}
-			if (recievedCommand == 3) {  // volume down
-				HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
-			}
-		}
-		vTaskDelay(pdMS_TO_TICKS(500));
-	}
-}
-void beeperTask(void *pvParameters) {
-	int recievedCommand = 0;
-	for (;;) {
-		if (xQueueReceive(usbQueue, &recievedCommand,
-				pdMS_TO_TICKS(100)) == pdPASS) {
-			if (recievedCommand == 4) {  // za beeper bo 4?
-				HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_15);
-			}
-		}
-		vTaskDelay(pdMS_TO_TICKS(500));
-	}
+    int command = -1;
+    for (;;) {
+        command++;
+        if (command > 4) {
+            command = 0;
+        }
+
+        xQueueSend(ledQueue, &command, pdMS_TO_TICKS(100));
+        xQueueSend(motorQueue, &command, pdMS_TO_TICKS(100));
+        xQueueSend(beeperQueue, &command, pdMS_TO_TICKS(100));
+
+        HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
 }
 
 /* USER CODE END 0 */
@@ -144,8 +155,13 @@ void beeperTask(void *pvParameters) {
 int main(void) {
 
 	/* USER CODE BEGIN 1 */
-	// Create a queue with 5 items, each of 1 byte (uint8_t) in size
-	usbQueue = xQueueCreate(5, sizeof(uint8_t));
+// Create a queue with 5 items, each of 1 byte (uint8_t) in size
+	//usbQueue = xQueueCreate(5, sizeof(uint8_t));
+	ledQueue = xQueueCreate(2, sizeof(int));
+	motorQueue = xQueueCreate(2, sizeof(int));
+	beeperQueue = xQueueCreate(2, sizeof(int));
+
+
 	/* USER CODE END 1 */
 
 	/* MCU Configuration--------------------------------------------------------*/
@@ -210,8 +226,10 @@ int main(void) {
 	/* add events, ... */
 	xTaskCreate(LEDTask, "LED Task", 128, NULL, 2, &TaskHandle_LEDTask);
 	xTaskCreate(USBTask, "USB Task", 128, NULL, 2, NULL);
-	xTaskCreate(beeperTask, "beeper Task", 128, NULL, 2, NULL);
-	xTaskCreate(DC_MotorTask, "DC Motor Task", 128, NULL, 2, NULL);
+	xTaskCreate(beeperTask, "beeper Task", 128, NULL, 2,
+			&TaskHandle_beeperTask);
+	xTaskCreate(DC_MotorTask, "DC Motor Task", 128, NULL, 2,
+			&TaskHandle_DC_MotorTask);
 	/* USER CODE END RTOS_EVENTS */
 
 	/* Start scheduler */

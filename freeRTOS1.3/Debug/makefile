@@ -68,8 +68,8 @@ all: main-build
 main-build: freeRTOS1.3.elf secondary-outputs
 
 # Tool invocations
-freeRTOS1.3.elf freeRTOS1.3.map: $(OBJS) $(USER_OBJS) C:\Users\jasam\Documents\Jasa\School\5_semester\projektGit\Prepoznavanje-gest-v-avtonomni-voznji\freeRTOS1.3\STM32F411VETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "freeRTOS1.3.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\jasam\Documents\Jasa\School\5_semester\projektGit\Prepoznavanje-gest-v-avtonomni-voznji\freeRTOS1.3\STM32F411VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="freeRTOS1.3.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+freeRTOS1.3.elf freeRTOS1.3.map: $(OBJS) $(USER_OBJS) C:\Users\evizj\OneDrive\Dokumenti\GitHub\Prepoznavanje-gest-v-avtonomni-voznji\freeRTOS1.3\STM32F411VETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "freeRTOS1.3.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\evizj\OneDrive\Dokumenti\GitHub\Prepoznavanje-gest-v-avtonomni-voznji\freeRTOS1.3\STM32F411VETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="freeRTOS1.3.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
