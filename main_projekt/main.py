@@ -13,6 +13,7 @@ model = None
 from PIL import Image
 import websockets
 import asyncio
+import compression
 def ai_thread(app):
 
     while app.is_running:
@@ -39,8 +40,9 @@ def ai_thread(app):
                 probs = result.probs  # Probs object for classification outputs
                 # obb = result.obb  # Oriented boxes object for OBB outputs
                 # result.show()  # display to screen
-                #result.save(filename='result.jpg')
+                result.save(filename='result.jpg')
                 app.setup_box(boxes, probs)
+                compression.compress_image("result.jpg","compressed_image.jpg")
         except Exception as e:
             print(e)
 

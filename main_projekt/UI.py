@@ -50,6 +50,7 @@ class CameraApp:
         self.master = master
         self.master.title(window_title)
         self.is_running = True
+        self.test_no_camera = True
         self.video_source = 0
         self.vid = cv2.VideoCapture(self.video_source)
         self.camera_url = "http://esp32.local/capture?"
@@ -115,35 +116,37 @@ class CameraApp:
         self.master.destroy()
 
     def snapshot(self):
-        # ret, frame = self.vid.read()
-        # if ret:
-        #     rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        #     pil_image = Image.fromarray(rgb_frame)
-        #     # Save the image using PIL
-        #     return pil_image
-        if self.rgb_frame is not None:
-            pil_image = Image.fromarray(self.rgb_frame)
+        if self.current_box:
+            ret, frame = self.vid.read()
+            if ret:
+                rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                pil_image = Image.fromarray(rgb_frame)
+                # Save the image using PIL
+                return pil_image
+        else:
+            if self.rgb_frame is not None:
+                pil_image = Image.fromarray(self.rgb_frame)
 
-            # Save the image using PIL
-            return pil_image
+                # Save the image using PIL
+                return pil_image
 
     def fetch_image(self):
-        """Fetch image from the camera in a separate thread"""
+
 
         def fetch():
             try:
-                response = requests.get(self.camera_url, timeout=1)
+                response = requests.get(self.camera_url, timeout=0.25)
                 if response.status_code == 200:
                     img_array = np.array(bytearray(response.content), dtype=np.uint8)
                     frame = cv2.imdecode(img_array, -1)
                     self.rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             except requests.exceptions.RequestException as e:
                 print(f"Request failed: {e}")
-            # Start fetching again as soon as the previous one finishes
-            self.fetch_image()
 
+            self.fetch_image()
+        if self.test_no_camera is False:
         # Run the fetch in a separate thread
-        threading.Thread(target=fetch, daemon=True).start()
+            threading.Thread(target=fetch, daemon=True).start()
 
     def call_spotify(self, gesture, function=None):
 
@@ -218,12 +221,14 @@ class CameraApp:
         return original_image
 
     def update(self):
-        # ret, frame = self.vid.read()
+        if self.test_no_camera:
+            ret, frame = self.vid.read()
+            self.rgb_frame = frame
         try:
 
             if self.rgb_frame is not None :
 
-                # self.rgb_frame = frame
+
                 self.sent_gesture = Gestures.NONE.value
                 copyOfFrame = self.rgb_frame.copy()
                 if self.current_box is not None and len(self.current_box.data) > 0:

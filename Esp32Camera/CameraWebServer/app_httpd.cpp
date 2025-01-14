@@ -289,8 +289,8 @@ static esp_err_t bmp_handler(httpd_req_t *req) {
     log_e("Camera capture failed");
     httpd_resp_send_500(req);
     return ESP_FAIL;
-  }
-
+  } 
+  
   httpd_resp_set_type(req, "image/x-windows-bmp");
   httpd_resp_set_hdr(req, "Content-Disposition", "inline; filename=capture.bmp");
   httpd_resp_set_hdr(req, "Access-Control-Allow-Origin", "*");
@@ -302,6 +302,7 @@ static esp_err_t bmp_handler(httpd_req_t *req) {
   uint8_t *buf = NULL;
   size_t buf_len = 0;
   bool converted = frame2bmp(fb, &buf, &buf_len);
+  
   esp_camera_fb_return(fb);
   if (!converted) {
     log_e("BMP Conversion failed");
