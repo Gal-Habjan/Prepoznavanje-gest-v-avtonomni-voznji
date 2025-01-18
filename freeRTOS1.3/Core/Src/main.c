@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "FreeRTOS.h"
 #include "queue.h"
+#include "task.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -77,6 +78,7 @@ static void MX_TIM3_Init(void);
 void StartDefaultTask(void *argument);
 
 /* USER CODE BEGIN PFP */
+void usbRecieveData(int *data);
 void LEDTask(void *pvParameters);
 void DC_MotorTask(void *pvParameters);
 void beeperTask(void *pvParameters);
@@ -90,7 +92,8 @@ TaskHandle_t TaskHandle_beeperTask;
 QueueHandle_t usbQueue;
 QueueHandle_t ledQueue, motorQueue, beeperQueue;
 
-
+static TaskHandle_t xLedTaskHandle = NULL;
+const uint8_t ucLedState = 1;
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -110,19 +113,6 @@ void beeper_noise() {   //pin je pb7
 
 }
 
-void LEDTask(void *pvParameters) {  // green LED
-    int recievedCommand = 0;
-    for (;;) {
-        xQueueReceive(ledQueue, &recievedCommand, pdMS_TO_TICKS(100));
-
-        if (recievedCommand == 1) {
-            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-        } else {
-            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
-        }
-
-    }
-}
 
 void DC_MotorTask(void *pvParameters) {  // red LED
     int recievedCommand = 0;
@@ -152,16 +142,41 @@ void beeperTask(void *pvParameters) {  // blue LED
 
     }
 }
+void LEDTask(void *pvParameters) {  // green LED
+    uint32_t recievedCommand = 0;
+    xLedTaskHandle = xTaskGetCurrentTaskHandle();
+//    uint32_t ulNotificationValue;
+    for (;;) {
 
+    	xTaskNotifyWait(0, 0x00, &recievedCommand, portMAX_DELAY);//Waits untill a task is called
+
+
+			if (recievedCommand == 1) {
+				HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+			} else {
+				HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+			}
+
+
+    }
+}
+static int usbCommand = 0;
+void usbRecieveData(int *data){
+
+	*data = usbCommand;
+	if(++usbCommand> 4){
+		usbCommand = 0;
+	}
+}
 void USBTask(void *pvParameters) {
     int command = -1;
     for (;;) {
-        command++;
-        if (command > 4) {
-            command = 0;
-        }
+    	usbRecieveData(&command);
 
-        xQueueSend(ledQueue, &command, pdMS_TO_TICKS(100));
+    	if(xLedTaskHandle != NULL){
+    		xTaskNotify(xLedTaskHandle, command, eSetValueWithoutOverwrite);
+    	}
+//        xQueueSend(ledQueue, &command, pdMS_TO_TICKS(100));
         xQueueSend(motorQueue, &command, pdMS_TO_TICKS(100));
         xQueueSend(beeperQueue, &command, pdMS_TO_TICKS(100));
 
