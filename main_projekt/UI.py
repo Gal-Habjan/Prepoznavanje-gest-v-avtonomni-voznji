@@ -50,6 +50,7 @@ class CameraApp:
         self.master = master
         self.master.title(window_title)
         self.is_running = True
+        self.save_image = False
         self.test_no_camera = True
         self.video_source = 0
         self.vid = cv2.VideoCapture(self.video_source)
@@ -89,6 +90,8 @@ class CameraApp:
         self.voice_label.pack(anchor=tk.CENTER, expand=True)
         button2 = tk.Button(master, text="Listen", command=self.listen_to_voice_button)
         button2.pack(pady=10)
+        button3 = tk.Button(master, text="Save", command=self.save_image_button)
+        button3.pack(pady=10)
         self.spotify_thread = None
         self.voice_thread = None
 
@@ -184,6 +187,8 @@ class CameraApp:
 
             self.voice_thread.start()
 
+    def save_image_button(self):
+        self.save_image = True
     def wait_for_sound(self):
         with self.lock:
             print("Start listening")

@@ -20,11 +20,11 @@
 #include "main.h"
 #include "cmsis_os.h"
 #include "usb_host.h"
-#include "queue.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "FreeRTOS.h"
+#include "queue.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -82,68 +82,81 @@ TaskHandle_t TaskHandle_beeperTask;
 QueueHandle_t usbQueue;
 QueueHandle_t ledQueue, motorQueue, beeperQueue;
 
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 void LEDTask(void *pvParameters) {  // green LED
-    int recievedCommand = 0;
-    for (;;) {
-        xQueueReceive(ledQueue, &recievedCommand, pdMS_TO_TICKS(100));
+	int recievedCommand = 0;
+	for (;;) {
+		xQueueReceive(ledQueue, &recievedCommand, pdMS_TO_TICKS(100));
 
-        if (recievedCommand == 1) {
-            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-        } else {
-            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
-        }
+		if (recievedCommand == 1) {
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
+		} else {
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_RESET);
+		}
 
-    }
+	}
 }
 
 void DC_MotorTask(void *pvParameters) {  // red LED
-    int recievedCommand = 0;
-    for (;;) {
-        xQueueReceive(motorQueue, &recievedCommand, pdMS_TO_TICKS(100));
+	int recievedCommand = 0;
+	for (;;) {
+		xQueueReceive(motorQueue, &recievedCommand, pdMS_TO_TICKS(100));
 
-        if (recievedCommand == 2 || recievedCommand == 3) {
-            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
-        } else {
-            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
-        }
+		if (recievedCommand == 2) {
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);
+		} else if (recievedCommand == 3) {
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET);
+		} else {
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, GPIO_PIN_RESET);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);
 
-    }
+		}
+
+	}
 }
 
 void beeperTask(void *pvParameters) {  // blue LED
-    int recievedCommand = 0;
-    for (;;) {
-        xQueueReceive(beeperQueue, &recievedCommand, pdMS_TO_TICKS(100));
+	int recievedCommand = 0;
+	for (;;) {
+		xQueueReceive(beeperQueue, &recievedCommand, pdMS_TO_TICKS(100));
 
-        if (recievedCommand == 4) {
-            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
-        } else {
-            HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
-        }
+		if (recievedCommand == 4) {
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_SET);
+		} else {
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_15, GPIO_PIN_RESET);
+		}
 
-    }
+	}
 }
 
 void USBTask(void *pvParameters) {
-    int command = -1;
-    for (;;) {
-        command++;
-        if (command > 4) {
-            command = 0;
-        }
+	int command = -1;
+	for (;;) {
+		command++;
+		if (command > 4) {
+			command = 0;
+		}
 
-        xQueueSend(ledQueue, &command, pdMS_TO_TICKS(100));
-        xQueueSend(motorQueue, &command, pdMS_TO_TICKS(100));
-        xQueueSend(beeperQueue, &command, pdMS_TO_TICKS(100));
+		xQueueSend(ledQueue, &command, pdMS_TO_TICKS(100));
+		xQueueSend(motorQueue, &command, pdMS_TO_TICKS(100));
+		xQueueSend(beeperQueue, &command, pdMS_TO_TICKS(100));
 
-        HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
+		HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
+		vTaskDelay(pdMS_TO_TICKS(1000));
+	}
 }
 
 /* USER CODE END 0 */
@@ -160,7 +173,6 @@ int main(void) {
 	ledQueue = xQueueCreate(2, sizeof(int));
 	motorQueue = xQueueCreate(2, sizeof(int));
 	beeperQueue = xQueueCreate(2, sizeof(int));
-
 
 	/* USER CODE END 1 */
 
@@ -466,8 +478,15 @@ static void MX_GPIO_Init(void) {
 			GPIO_PIN_SET);
 
 	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(GPIOA, GPIO_PIN_1 | GPIO_PIN_2, GPIO_PIN_RESET);
+
+	/*Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4 | GPIO_PIN_5, GPIO_PIN_RESET);
+
+	/*Configure GPIO pin Output Level */
 	HAL_GPIO_WritePin(GPIOD,
-	LD4_Pin | LD3_Pin | LD5_Pin | LD6_Pin | Audio_RST_Pin, GPIO_PIN_RESET);
+			LD4_Pin | LD3_Pin | LD5_Pin | LD6_Pin | Audio_RST_Pin,
+			GPIO_PIN_RESET);
 
 	/*Configure GPIO pin : DATA_Ready_Pin */
 	GPIO_InitStruct.Pin = DATA_Ready_Pin;
@@ -488,17 +507,24 @@ static void MX_GPIO_Init(void) {
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-	/*Configure GPIO pin : OTG_FS_PowerSwitchOn_Pin */
-	GPIO_InitStruct.Pin = OTG_FS_PowerSwitchOn_Pin;
+	/*Configure GPIO pins : OTG_FS_PowerSwitchOn_Pin PC4 PC5 */
+	GPIO_InitStruct.Pin = OTG_FS_PowerSwitchOn_Pin | GPIO_PIN_4 | GPIO_PIN_5;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(OTG_FS_PowerSwitchOn_GPIO_Port, &GPIO_InitStruct);
+	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 	/*Configure GPIO pin : PA0 */
 	GPIO_InitStruct.Pin = GPIO_PIN_0;
 	GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	/*Configure GPIO pins : PA1 PA2 */
+	GPIO_InitStruct.Pin = GPIO_PIN_1 | GPIO_PIN_2;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 	/*Configure GPIO pins : LD4_Pin LD3_Pin LD5_Pin LD6_Pin

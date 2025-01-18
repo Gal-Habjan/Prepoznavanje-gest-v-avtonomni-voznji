@@ -25,7 +25,12 @@ def ai_thread(app):
             for result in results:
                 boxes = result.boxes
                 probs = result.probs
-                result.save(filename='result.jpg')
+                if app.save_image:
+
+                    result.save(filename='result.jpg')
+
+                    compression.compress_image('result.jpg', 'compressed_result.jpg')
+                    app.save_image = False
                 app.setup_box(boxes, probs)
         except Exception as e:
             print(e)
