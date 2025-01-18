@@ -54,7 +54,7 @@ class CameraApp:
         self.video_source = 0
         self.vid = cv2.VideoCapture(self.video_source)
         self.camera_url = "http://esp32.local/capture?"
-
+        self.sent_gesture = []
         self.canvas = tk.Canvas(master, width=self.vid.get(cv2.CAP_PROP_FRAME_WIDTH),
                                 height=self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.canvas.pack()
@@ -93,7 +93,7 @@ class CameraApp:
         self.voice_thread = None
 
         # self.wait_for_sound()
-        self.sent_gesture = None
+
 
     def on_connect(self, client, userdata, flags, reasonCode, properties=None):
         print("Povezava z GESTA MQTT: " + str(reasonCode))
@@ -223,13 +223,13 @@ class CameraApp:
     def update(self):
         if self.test_no_camera:
             ret, frame = self.vid.read()
-            self.rgb_frame = frame
+            self.rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         try:
 
             if self.rgb_frame is not None :
 
 
-                self.sent_gesture = Gestures.NONE.value
+
                 copyOfFrame = self.rgb_frame.copy()
                 if self.current_box is not None and len(self.current_box.data) > 0:
                     # print(self.current_box.data)
@@ -264,7 +264,8 @@ class CameraApp:
 
                     elif clas == Gestures.NONE.value:
                         gesture = Gestures.NONE
-                    self.sent_gesture = clas
+                    self.sent_gesture.append(gesture)
+
                     if self.spotify_thread is None or not self.spotify_thread.is_alive():
                         self.spotify_thread = Thread(target=self.call_spotify, args=(gesture,))
                         self.spotify_thread.start()
@@ -275,7 +276,10 @@ class CameraApp:
                                 2)
                     self.gesture_label.config(text=gestures_features_dict[gesture].name)
                 else:
+                    self.sent_gesture.append(Gestures.NONE)
                     self.gesture_label.config(text="Waiting..")
+                if len(self.sent_gesture) > 5:
+                    self.sent_gesture = self.sent_gesture[3:]
                 self.photo = ImageTk.PhotoImage(image=Image.fromarray(copyOfFrame))
                 self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
 

@@ -23,16 +23,14 @@ document.body.appendChild(renderer.domElement);
 const ambientLight = new THREE.AmbientLight(0x404040, 2); // ambient luc
 scene.add(ambientLight);
 
-
-
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // bela direction
 var cube2 = new THREE.Mesh(
     new THREE.BoxGeometry(1, 1, 1),
     new THREE.MeshLambertMaterial({ color: 0xffaaaa })
 );
 
-cube2.position.set(10,10,10)
-directionalLight.position.set(10,10,10);
+cube2.position.set(10, 10, 10);
+directionalLight.position.set(10, 10, 10);
 directionalLight.castShadow = true;
 directionalLight.shadow.camera.near = 0.1;
 directionalLight.shadow.camera.far = 1000;
@@ -40,13 +38,6 @@ directionalLight.shadow.mapSize.width = 512;
 directionalLight.shadow.mapSize.height = 512;
 scene.add(directionalLight);
 scene.add(cube2);
-
-
-
-
-
-
-
 
 const vertexShader = `
     varying vec3 vWorldPosition;
@@ -72,7 +63,7 @@ const geometry = new THREE.SphereGeometry(500, 32, 32);
 const material = new THREE.ShaderMaterial({
     vertexShader: vertexShader,
     fragmentShader: fragmentShader,
-    side: THREE.BackSide
+    side: THREE.BackSide,
 });
 
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -81,7 +72,9 @@ const loader = new FBXLoader();
 const textureLoader = new THREE.TextureLoader();
 const texture = textureLoader.load("./bake-2.png");
 let mixer;
+let mixerRightHand;
 let animations = [];
+
 loader.load(
     "./hand.fbx",
     (object) => {
@@ -92,17 +85,51 @@ loader.load(
                 child.castShadow = true;
             }
         });
-        object.position.set(0, -10, 20);
+        object.position.set(-16, -4, 29);
         object.scale.set(0.03, 0.03, 0.03);
-        object.rotation.y = 90;
+        object.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
         scene.add(object);
         mixer = new THREE.AnimationMixer(object);
 
         console.log(object.animations);
         object.animations.forEach((clip) => {
             animations.push(clip);
-            if (clip.name === "Armature|activeState") {
+            if (clip.name === "Armature|inactiveState") {
                 const action = mixer.clipAction(clip);
+                action.setLoop(THREE.LoopOnce, 1);
+                action.clampWhenFinished = true;
+                action.play();
+            }
+        });
+    },
+    (xhr) => {
+        console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
+    },
+    (error) => {
+        console.error("An error occurred while loading the FBX file:", error);
+    }
+);
+
+loader.load(
+    "./hand.fbx",
+    (objectRightHand) => {
+        objectRightHand.traverse((child) => {
+            if (child.isMesh) {
+                child.material = new THREE.MeshBasicMaterial({ map: texture });
+                child.receiveShadow = true;
+                child.castShadow = true;
+            }
+        });
+        objectRightHand.position.set(2, -4, 29);
+        objectRightHand.scale.set(0.03, 0.03, -0.03);
+        objectRightHand.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
+        scene.add(objectRightHand);
+        mixerRightHand = new THREE.AnimationMixer(objectRightHand);
+
+        console.log(objectRightHand.animations);
+        objectRightHand.animations.forEach((clip) => {
+            if (clip.name === "Armature|hand") {
+                const action = mixerRightHand.clipAction(clip);
                 action.setLoop(THREE.LoopOnce, 1);
                 action.clampWhenFinished = true;
                 action.play();
@@ -122,7 +149,9 @@ loader.load(
     (object) => {
         object.traverse((child) => {
             if (child.isMesh) {
-                child.material = new THREE.MeshBasicMaterial({ map: cameraTexture }); // Apply texture
+                child.material = new THREE.MeshBasicMaterial({
+                    map: cameraTexture,
+                }); // Apply texture
                 child.receiveShadow = true;
                 child.castShadow = true;
             }
@@ -131,31 +160,20 @@ loader.load(
         object.scale.set(0.01, 0.01, 0.01);
         object.rotation.set(Math.PI / 2, 0, 0);
         scene.add(object);
-
-
-
     },
-    (xhr) => {
-
-    },
+    (xhr) => {},
     (error) => {
         console.error("An error occurred while loading the FBX file:", error);
     }
 );
-
-
-
-
-
-camera.position.z = 5;
-
+console.log(camera.position);
+camera.position.set(-8, 6, 38);
 
 const sky = new THREE.Mesh(geometry, material);
 scene.add(sky);
 
-
 loader_gltf.load(
-    './vent.glb',
+    "./vent.glb",
     (gltf) => {
         const car = gltf.scene;
         scene.add(car);
@@ -164,26 +182,28 @@ loader_gltf.load(
             if (child.isMesh) {
                 child.receiveShadow = true;
                 child.castShadow = true;
-                if (child.name.toLowerCase().includes('vent')) {
-                    child.material = new THREE.MeshStandardMaterial({ color: 0xff0000 }); // Red color
+                if (child.name.toLowerCase().includes("vent")) {
+                    child.material = new THREE.MeshStandardMaterial({
+                        color: 0xff0000,
+                    }); // Red color
                 }
             }
         });
 
         car.position.set(7, -5, 1);
         car.scale.set(2.7, 2.7, 2.7);
-        car.rotation.y = 0.15;
+        car.rotation.y = THREE.MathUtils.degToRad(0);
     },
     (xhr) => {
         console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
     },
     (error) => {
-        console.error('An error occurred while loading the GLTF file:', error);
+        console.error("An error occurred while loading the GLTF file:", error);
     }
 );
 
 loader_gltf.load(
-    './car.glb',
+    "./car.glb",
     (gltf) => {
         const car = gltf.scene;
         scene.add(car);
@@ -192,35 +212,84 @@ loader_gltf.load(
             if (child.isMesh) {
                 child.receiveShadow = true;
                 child.castShadow = true;
-                if (child.name.toLowerCase().includes('vent')) {
-                    child.material = new THREE.MeshStandardMaterial({ color: 0xff0000 }); // Red color
+                if (child.name.toLowerCase().includes("vent")) {
+                    child.material = new THREE.MeshStandardMaterial({
+                        color: 0xff0000,
+                    }); // Red color
                 }
             }
         });
 
         car.position.set(5, -60, 10);
         car.scale.set(40, 40, 40);
-        car.rotation.y = 30;
+        car.rotation.y = THREE.MathUtils.degToRad(-90);
     },
     (xhr) => {
         console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
     },
     (error) => {
-        console.error('An error occurred while loading the GLTF file:', error);
+        console.error("An error occurred while loading the GLTF file:", error);
     }
 );
 
-
-camera.position.z = 30;
 const socket = new WebSocket("ws://localhost:8765");
 
 socket.onopen = () => {
     console.log("Connected to WebSocket!");
     socket.send("Hello Server!");
 };
-
+let handState = true;
 socket.onmessage = (event) => {
     console.log("Received:", event.data);
+    if (mixerRightHand) {
+        const actions = mixerRightHand._actions;
+
+        let clip = undefined;
+
+        if (actions.paused) {
+            console.log(actions.paused);
+        }
+        if (event.data == 4) {
+            if (handState == false) return;
+            clip = animations[1];
+
+            handState = false;
+        } else {
+            if (handState == false) {
+                clip = animations[0];
+                handState = true;
+            } else {
+                if (event.data == 0) {
+                    clip = animations[2]; //fist
+                } else if (event.data == 1) {
+                    // hand
+                    clip = animations[4];
+                } else if (event.data == 2) {
+                    // peace
+                    clip = animations[3];
+                } else if (event.data == 3) {
+                    // thumbs up
+                    clip = animations[5];
+                }
+            }
+        }
+        const currentAction = actions[0];
+        console.log(currentAction);
+        console.log(clip.name, currentAction._clip.name);
+        if (!clip || clip.name == currentAction._clip.name) return;
+        if (currentAction) {
+            currentAction.stop(); // Stop the previous action
+        }
+        const action = mixerRightHand.clipAction(clip);
+
+        action.setLoop(THREE.LoopOnce, 1);
+        action.clampWhenFinished = true;
+        action.play();
+    }
+    // if (mixer) {
+    //     const action = mixer.clipAction(animations[0]);
+    //     action.reset().play();
+    // }
 };
 
 socket.onerror = (error) => {
@@ -232,18 +301,19 @@ socket.onclose = (event) => {
 };
 
 function animate() {
-    if (mixer) {
-        mixer.update(0.01);
+    if (mixer && mixerRightHand) {
+        mixer.update(0.05);
+        mixerRightHand.update(0.05);
     }
     renderer.render(scene, camera);
     updateAnimationName();
     try {
-    } catch { }
+    } catch {}
 }
 
-const animationNameElement = document.getElementById('animationName');
+const animationNameElement = document.getElementById("animationName");
 
-let currentAnimationName = '';
+let currentAnimationName = "";
 
 function updateAnimationName() {
     if (mixer && mixer._actions.length > 0) {
@@ -259,15 +329,12 @@ function updateAnimationName() {
     }
 }
 
-
 //demo animacije
-document.getElementById('animateButton').addEventListener('click', () => {
+document.getElementById("animateButton").addEventListener("click", () => {
     if (mixer) {
         const action = mixer.clipAction(animations[0]);
         action.reset().play();
-
     }
 });
-
 
 renderer.setAnimationLoop(animate);
