@@ -188,7 +188,7 @@
       <workItem from="1736517367068" duration="282000" />
       <workItem from="1736698477062" duration="7412000" />
       <workItem from="1737210698354" duration="8034000" />
-      <workItem from="1737237386346" duration="992000" />
+      <workItem from="1737237386346" duration="1622000" />
     </task>
     <servers />
   </component>
@@ -222,7 +222,7 @@
     <SUITE FILE_PATH="coverage/main_projekt$testingCamera.coverage" NAME="testingCamera Coverage Results" MODIFIED="1734879512937" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/main_projekt$testWebsocket.coverage" NAME="testWebsocket Coverage Results" MODIFIED="1735408865401" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/main_projekt$compression.coverage" NAME="compression Coverage Results" MODIFIED="1736704298804" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_projekt$show_decompressed_img.coverage" NAME="show_decompressed_img Coverage Results" MODIFIED="1736704621071" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_projekt$main.coverage" NAME="main Coverage Results" MODIFIED="1737222832466" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_projekt$show_decompressed_img.coverage" NAME="show_decompressed_img Coverage Results" MODIFIED="1737239223945" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_projekt$main.coverage" NAME="main Coverage Results" MODIFIED="1737239147498" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>
