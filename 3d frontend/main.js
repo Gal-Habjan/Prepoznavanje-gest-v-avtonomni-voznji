@@ -4,7 +4,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
-
+import { Lensflare, LensflareElement } from 'three/addons/objects/Lensflare.js';
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffffff);
 const camera = new THREE.PerspectiveCamera(
@@ -39,7 +39,7 @@ directionalLight.shadow.camera.far = 1000;
 directionalLight.shadow.mapSize.width = 512;
 directionalLight.shadow.mapSize.height = 512;
 scene.add(directionalLight);
-scene.add(cube2);
+// scene.add(cube2);
 
 
 
@@ -87,7 +87,7 @@ loader.load(
     (object) => {
         object.traverse((child) => {
             if (child.isMesh) {
-                child.material = new THREE.MeshBasicMaterial({ map: texture });
+                child.material = new THREE.MeshStandardMaterial({ map: texture, flatShading: false });
                 child.receiveShadow = true;
                 child.castShadow = true;
             }
@@ -116,6 +116,9 @@ loader.load(
         console.error("An error occurred while loading the FBX file:", error);
     }
 );
+function degToRad(degrees) {
+    return degrees * (Math.PI / 180);
+}
 const cameraTexture = textureLoader.load("./esp32camBake.PNG");
 loader.load(
     "./ReworkedAiCam3.fbx", // Path to your FBX file
@@ -129,7 +132,7 @@ loader.load(
         });
         object.position.set(3, -4.5, 2); // Adjust position if needed
         object.scale.set(0.01, 0.01, 0.01);
-        object.rotation.set(Math.PI / 2, 0, 0);
+        object.rotation.set(degToRad(90), degToRad(0), degToRad(-10));
         scene.add(object);
 
 
@@ -209,6 +212,30 @@ loader_gltf.load(
         console.error('An error occurred while loading the GLTF file:', error);
     }
 );
+
+
+//lens flare 
+const textureFlare0 = textureLoader.load( './lensflare0.png' );
+const textureFlare3 = textureLoader.load( './lensflare3.png' );
+addLight(  3, -4.5, 3 );
+
+
+function addLight(x, y, z ) {
+
+    const light = new THREE.PointLight( 0xffffff, 1.5, 1000, 0 );
+
+    light.position.set( x, y, z );
+    scene.add( light );
+
+    const lensflare = new Lensflare();
+    lensflare.addElement( new LensflareElement( textureFlare0, 700, 0, light.color ) );
+    lensflare.addElement( new LensflareElement( textureFlare3, 60, 0.6 ) );
+    lensflare.addElement( new LensflareElement( textureFlare3, 70, 0.7 ) );
+    lensflare.addElement( new LensflareElement( textureFlare3, 120, 0.9 ) );
+    lensflare.addElement( new LensflareElement( textureFlare3, 70, 1 ) );
+    light.add( lensflare );
+
+}
 
 
 camera.position.z = 30;
