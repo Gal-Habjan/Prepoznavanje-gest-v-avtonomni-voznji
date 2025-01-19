@@ -14,6 +14,8 @@ from datetime import datetime
 import paho.mqtt.client as mqtt
 from prometheus_client import start_http_server, Counter
 import voice_recognition as voice
+import serial
+import struct
 
 
 
@@ -61,6 +63,7 @@ class CameraApp:
         self.canvas.pack()
         self.gesture_label = tk.Label(master, text="Waiting..")
         self.gesture_label.pack(anchor=tk.CENTER, expand=True)
+        self.serial = serial.Serial('COM8', 9600, timeout=1)
         # self.turn_down_volume_counter = Counter('volume_down', 'volume down counter')
         # self.turn_up_volume_counter = Counter('volume_up', 'volume up counter')
         # self.toggle_pause_counter = Counter('toggle_pause', 'toggle pause counter')
@@ -285,6 +288,12 @@ class CameraApp:
                     self.gesture_label.config(text="Waiting..")
                 if len(self.sent_gesture) > 5:
                     self.sent_gesture = self.sent_gesture[3:]
+                data = struct.pack('B', self.sent_gesture[-1])
+                try:
+                    self.serial.write(data)
+                except Exception as e:
+                    print("usb error",e)
+                    self.serial = serial.Serial('COM8', 9600, timeout=1)
                 self.photo = ImageTk.PhotoImage(image=Image.fromarray(copyOfFrame))
                 self.canvas.create_image(0, 0, image=self.photo, anchor=tk.NW)
 

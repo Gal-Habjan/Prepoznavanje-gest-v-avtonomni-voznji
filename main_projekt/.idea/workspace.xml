@@ -12,7 +12,120 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="be2d44f2-7ff8-4ef5-9f57-812edcae70a8" name="Changes" comment="" />
+    <list default="true" id="be2d44f2-7ff8-4ef5-9f57-812edcae70a8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/.mxproject" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/.mxproject" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Core/Src/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Core/Src/main.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/freertos.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/freertos.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/freertos.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/freertos.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/main.cyclo" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/main.cyclo" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/main.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/main.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/main.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/main.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/main.su" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/main.su" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/stm32f4xx_hal_msp.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/stm32f4xx_hal_msp.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/stm32f4xx_hal_msp.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/stm32f4xx_hal_msp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/stm32f4xx_hal_timebase_tim.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/stm32f4xx_hal_timebase_tim.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/stm32f4xx_hal_timebase_tim.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/stm32f4xx_hal_timebase_tim.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/stm32f4xx_it.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/stm32f4xx_it.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/stm32f4xx_it.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/stm32f4xx_it.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/subdir.mk" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/subdir.mk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/system_stm32f4xx.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/system_stm32f4xx.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/system_stm32f4xx.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Core/Src/system_stm32f4xx.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.cyclo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_hcd.su" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2c_ex.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_spi.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_ll_usb.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Drivers/STM32F4xx_HAL_Driver/Src/subdir.mk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.cyclo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Class/CDC/Src/usbh_cdc.su" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.cyclo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_core.su" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.cyclo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ctlreq.su" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.cyclo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_ioreq.su" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.cyclo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/ST/STM32_USB_Host_Library/Core/Src/usbh_pipes.su" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.d" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.d" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/subdir.mk" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/subdir.mk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/subdir.mk" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/Third_Party/FreeRTOS/Source/portable/GCC/ARM_CM4F/subdir.mk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/subdir.mk" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/subdir.mk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/Third_Party/FreeRTOS/Source/subdir.mk" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/Middlewares/Third_Party/FreeRTOS/Source/subdir.mk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/USB_HOST/App/usb_host.cyclo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/USB_HOST/App/usb_host.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/USB_HOST/App/usb_host.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/USB_HOST/App/usb_host.su" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/USB_HOST/Target/usbh_conf.cyclo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/USB_HOST/Target/usbh_conf.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/USB_HOST/Target/usbh_conf.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/USB_HOST/Target/usbh_conf.su" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/USB_HOST/Target/usbh_platform.cyclo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/USB_HOST/Target/usbh_platform.d" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/USB_HOST/Target/usbh_platform.o" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/USB_HOST/Target/usbh_platform.su" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/freeRTOS1.3.elf" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/freeRTOS1.3.elf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/freeRTOS1.3.list" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/freeRTOS1.3.list" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/freeRTOS1.3.map" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/freeRTOS1.3.map" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/makefile" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/makefile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/objects.list" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/objects.list" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/Debug/sources.mk" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/Debug/sources.mk" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../freeRTOS1.3/freeRTOS1.3.ioc" beforeDir="false" afterPath="$PROJECT_DIR$/../freeRTOS1.3/freeRTOS1.3.ioc" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/UI.py" beforeDir="false" afterPath="$PROJECT_DIR$/UI.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testWebsocket.py" beforeDir="false" afterPath="$PROJECT_DIR$/testWebsocket.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -141,9 +254,9 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/main_projekt$UI.coverage" NAME="UI Coverage Results" MODIFIED="1737219382329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/main_projekt$testingCamera.coverage" NAME="testingCamera Coverage Results" MODIFIED="1734879512937" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_projekt$testWebsocket.coverage" NAME="testWebsocket Coverage Results" MODIFIED="1735408865401" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/main_projekt$compression.coverage" NAME="compression Coverage Results" MODIFIED="1736704298804" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_projekt$testWebsocket.coverage" NAME="testWebsocket Coverage Results" MODIFIED="1737250184592" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/main_projekt$show_decompressed_img.coverage" NAME="show_decompressed_img Coverage Results" MODIFIED="1737239223945" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/main_projekt$main.coverage" NAME="main Coverage Results" MODIFIED="1737239147498" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/main_projekt$main.coverage" NAME="main Coverage Results" MODIFIED="1737250407521" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

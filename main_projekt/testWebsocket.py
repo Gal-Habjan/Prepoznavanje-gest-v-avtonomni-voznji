@@ -1,14 +1,10 @@
-import asyncio
-import websockets
+import serial
+import struct
 
-async def echo(websocket):
-    async for message in websocket:
-        await websocket.send(f"Echo: {message}")
+ser = serial.Serial('COM8', 9600, timeout=1)
 
-async def main():
-    start_server = websockets.serve(echo, "localhost", 8765)
-    await start_server
+command = 4
 
-    await asyncio.Future()  # Keeps the server running
+data = struct.pack('B', command)
 
-asyncio.run(main())
+ser.write(data)
