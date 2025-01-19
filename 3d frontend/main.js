@@ -1,14 +1,33 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
+
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 import { FBXLoader } from "three/addons/loaders/FBXLoader.js";
 import { Lensflare, LensflareElement } from "three/addons/objects/Lensflare.js";
+
+import { VRButton } from 'three/addons/webxr/VRButton.js';
+
+
+const startTime = performance.now();
+let resourcesToLoad = 5; // leva roka, desna roka, kamera, avto, vent
+let resourcesLoaded = 0;
+
+function onResourceLoaded() {
+    
+    resourcesLoaded++;
+    if (resourcesLoaded === resourcesToLoad) {
+        const endTime = performance.now();
+        const loadingTime = endTime - startTime; 
+        console.log(`All resources loaded in: ${loadingTime.toFixed(2)/1000}s`);
+    }
+}
+
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffffff);
 const camera = new THREE.PerspectiveCamera(
-    75,
+    80,
     window.innerWidth / window.innerHeight,
     0.1,
     1000
@@ -18,6 +37,7 @@ const renderer = new THREE.WebGLRenderer();
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.setSize(window.innerWidth, window.innerHeight);
+//renderer.setSize(500, 500);
 document.body.appendChild(renderer.domElement);
 
 const ambientLight = new THREE.AmbientLight(0x404040, 2); // ambient luc
@@ -66,7 +86,11 @@ const material = new THREE.ShaderMaterial({
     side: THREE.BackSide,
 });
 
-const controls = new OrbitControls(camera, renderer.domElement);
+console.log(camera.position);
+camera.position.set(-2, 10, 35);  // movecamera
+camera.rotation.x = THREE.MathUtils.degToRad(-15);
+
+//const controls = new OrbitControls(camera, renderer.domElement);  //kontrole
 const loader_gltf = new GLTFLoader();
 const loader = new FBXLoader();
 const textureLoader = new THREE.TextureLoader();
@@ -88,10 +112,11 @@ loader.load(
                 child.castShadow = true;
             }
         });
-        object.position.set(-16, -4, 29);
+        object.position.set(-15.5, -4, 28);
         object.scale.set(0.03, 0.03, 0.03);
         object.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
         scene.add(object);
+        onResourceLoaded();
         mixer = new THREE.AnimationMixer(object);
 
         console.log(object.animations);
@@ -106,7 +131,7 @@ loader.load(
         });
     },
     (xhr) => {
-        console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
+       // console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
     },
     (error) => {
         console.error("An error occurred while loading the FBX file:", error);
@@ -126,10 +151,11 @@ loader.load(
                 child.castShadow = true;
             }
         });
-        objectRightHand.position.set(2, -4, 29);
+        objectRightHand.position.set(7, -4, 29);
         objectRightHand.scale.set(0.03, 0.03, -0.03);
         objectRightHand.rotation.set(0, THREE.MathUtils.degToRad(90), 0);
         scene.add(objectRightHand);
+        onResourceLoaded();
         mixerRightHand = new THREE.AnimationMixer(objectRightHand);
 
         console.log(objectRightHand.animations);
@@ -143,7 +169,7 @@ loader.load(
         });
     },
     (xhr) => {
-        console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
+       // console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
     },
     (error) => {
         console.error("An error occurred while loading the FBX file:", error);
@@ -162,22 +188,22 @@ loader.load(
                 child.castShadow = true;
             }
         });
-        object.position.set(3, -4.5, 2); // Adjust position if needed
+        object.position.set(7, 0, -5); 
         object.scale.set(0.01, 0.01, 0.01);
         object.rotation.set(
-            THREE.MathUtils.degToRad(90),
-            THREE.MathUtils.degToRad(0),
-            THREE.MathUtils.degToRad(-10)
+            THREE.MathUtils.degToRad(70),
+            THREE.MathUtils.degToRad(-3),
+            THREE.MathUtils.degToRad(0)
         );
         scene.add(object);
+        onResourceLoaded();
     },
     (xhr) => {},
     (error) => {
         console.error("An error occurred while loading the FBX file:", error);
     }
 );
-console.log(camera.position);
-camera.position.set(-8, 6, 38);
+
 
 const sky = new THREE.Mesh(geometry, material);
 scene.add(sky);
@@ -186,7 +212,6 @@ loader_gltf.load(
     "./vent.glb",
     (gltf) => {
         const car = gltf.scene;
-        scene.add(car);
 
         car.traverse((child) => {
             if (child.isMesh) {
@@ -194,58 +219,64 @@ loader_gltf.load(
                 child.castShadow = true;
                 if (child.name.toLowerCase().includes("vent")) {
                     child.material = new THREE.MeshStandardMaterial({
-                        color: 0xff0000,
-                    }); // Red color
+                        color: 0x808000,
+                    }); 
+                    
                 }
             }
         });
 
-        car.position.set(7, -5, 1);
-        car.scale.set(2.7, 2.7, 2.7);
-        car.rotation.y = THREE.MathUtils.degToRad(0);
+        car.position.set(13, -0.5, -4);  //levo desno, gor dol , nazaj naprej
+        car.scale.set(2.7, 3, 2.7);
+        car.rotation.x = THREE.MathUtils.degToRad(-30);
+        car.rotation.y = THREE.MathUtils.degToRad(-10);
+        car.rotation.z = THREE.MathUtils.degToRad(-7);
+        scene.add(car);
+        onResourceLoaded();
+
     },
     (xhr) => {
-        console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
+       // console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
     },
     (error) => {
         console.error("An error occurred while loading the GLTF file:", error);
     }
 );
 
-loader_gltf.load(
-    "./car.glb",
-    (gltf) => {
-        const car = gltf.scene;
-        scene.add(car);
-
-        car.traverse((child) => {
+loader.load(
+    "./kms.fbx",
+    (objectRightHand) => {
+        objectRightHand.traverse((child) => {
             if (child.isMesh) {
+                //child.material.color.set(0x808080);
+                child.material = new THREE.MeshStandardMaterial({
+                    color: 0x222222,
+                    flatShading: false,
+                });
                 child.receiveShadow = true;
                 child.castShadow = true;
-                if (child.name.toLowerCase().includes("vent")) {
-                    child.material = new THREE.MeshStandardMaterial({
-                        color: 0xff0000,
-                    }); // Red color
-                }
+                
             }
         });
+        objectRightHand.position.set(-42, -7, 51);
+        objectRightHand.scale.set(0.4,0.4,0.4);
+        objectRightHand.rotation.set(0, THREE.MathUtils.degToRad(0), 0);
+        scene.add(objectRightHand);
+        onResourceLoaded();
 
-        car.position.set(5, -60, 10);
-        car.scale.set(40, 40, 40);
-        car.rotation.y = THREE.MathUtils.degToRad(-90);
+        
     },
     (xhr) => {
-        console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
+        //console.log(`Loading: ${(xhr.loaded / xhr.total) * 100}% complete`);
     },
     (error) => {
-        console.error("An error occurred while loading the GLTF file:", error);
+        console.error("An error occurred while loading the FBX file:", error);
     }
 );
-
 //lens flare
 const textureFlare0 = textureLoader.load("./lensflare0.png");
 const textureFlare3 = textureLoader.load("./lensflare3.png");
-addLight(3, -4.5, 3);
+addLight(6.5, 0, -4);
 
 function addLight(x, y, z) {
     const light = new THREE.PointLight(0xffffff, 1.5, 1000, 0);
@@ -255,7 +286,7 @@ function addLight(x, y, z) {
 
     const lensflare = new Lensflare();
     lensflare.addElement(
-        new LensflareElement(textureFlare0, 700, 0, light.color)
+        new LensflareElement(textureFlare0, 100, 0, light.color)
     );
     lensflare.addElement(new LensflareElement(textureFlare3, 60, 0.6));
     lensflare.addElement(new LensflareElement(textureFlare3, 70, 0.7));
@@ -263,6 +294,8 @@ function addLight(x, y, z) {
     lensflare.addElement(new LensflareElement(textureFlare3, 70, 1));
     light.add(lensflare);
 }
+
+
 
 const socket = new WebSocket("ws://localhost:8765");
 
@@ -355,18 +388,9 @@ function updateAnimationName() {
             // update text ce je druga animacija
             if (currentAnimationName !== animationName) {
                 currentAnimationName = animationName;
-                animationNameElement.textContent = `Animation: ${currentAnimationName}`;
+                animationNameElement.textContent = `${currentAnimationName}`;
             }
         }
     }
 }
-
-//demo animacije
-document.getElementById("animateButton").addEventListener("click", () => {
-    if (mixer) {
-        const action = mixer.clipAction(animations[0]);
-        action.reset().play();
-    }
-});
-
 renderer.setAnimationLoop(animate);
